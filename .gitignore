@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.mypy_cache/
+.pytest_cache/
+
+# datasets and downloads (regenerable, never committed)
+data/
+samples/*.png
+
+# monitoring: service log and generated reports (regenerable)
+serving-logs/
+reports/
+
+.DS_Store

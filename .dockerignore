@@ -1,0 +1,16 @@
+# Lean build context: data and logs enter only through mounts (SDD section 2).
+.git
+.venv
+__pycache__
+*.pyc
+*.egg-info
+.mypy_cache/
+.pytest_cache/
+data/
+serving-logs/
+reports/
+docs/
+samples/
+tests/
+*.log
+.DS_Store

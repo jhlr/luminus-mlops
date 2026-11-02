@@ -1,0 +1,79 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "luminus-mlops"
+version = "0.1.0"
+description = "MLOps monitoring of an off-the-shelf image classifier (MobileNetV3-Small, ImageNet): request/response log, Prometheus metrics, drift (KS, PSI), Loki and Grafana."
+requires-python = ">=3.13"
+license = "MIT"
+dependencies = [
+    "pillow",
+    "numpy",
+]
+
+# Three separate environments (docs/2026-11-02_sdd_monitoramento_mlops.md, section 2): each installs only its own set.
+# `just setup` installs all of them (--all-extras).
+[project.optional-dependencies]
+inference = [
+    "bentoml",
+    "prometheus_client",
+    "torch",
+    "torchvision",
+]
+# "training" environment: builds the reference set with the real model (no training happens here)
+reference = [
+    "torch",
+    "torchvision",
+    "scipy",
+]
+monitor = [
+    "bentoml",
+    "prometheus_client",
+    "pandas",
+    "scipy",
+    "matplotlib",
+    "httpx",
+    "openpyxl",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "mypy>=1.10",
+    "scipy-stubs",
+    "types-openpyxl",
+    "pandas-stubs",
+    "httpx",
+    "scipy",
+    "matplotlib",
+    "openpyxl",
+]
+
+[tool.mypy]
+strict = true
+python_version = "3.13"
+mypy_path = "src"
+files = ["src", "scripts", "tests"]
+plugins = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+# BentoML ships no py.typed for `_bentoml_sdk`, so `bentoml.api` and `bentoml.service` are `Any` to mypy. The only
+# strict check relaxed is the untyped-decorator rule, and only in the two modules that apply those decorators.
+[[tool.mypy.overrides]]
+module = ["luminus_mlops.service", "luminus_mlops.monitor_service"]
+disallow_untyped_decorators = false
+
+# torchvision ships type hints without a py.typed marker: let mypy read its sources.
+[[tool.mypy.overrides]]
+module = ["torchvision.*"]
+follow_untyped_imports = true
