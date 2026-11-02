@@ -1,0 +1,174 @@
+# HELP bentoml_service_last_request_timestamp_seconds Timestamp of the last received request
+# TYPE bentoml_service_last_request_timestamp_seconds gauge
+bentoml_service_last_request_timestamp_seconds{pid="24",runner_name="classifier",service_name="classifier",service_version="not available"} 1.7936306841384783e+09
+# HELP bentoml_service_request_in_progress Total number of runner RPC in progress now
+# TYPE bentoml_service_request_in_progress gauge
+bentoml_service_request_in_progress{endpoint="/readyz",runner_name="classifier",service_name="classifier",service_version="not available"} 0.0
+bentoml_service_request_in_progress{endpoint="/predict",runner_name="classifier",service_name="classifier",service_version="not available"} 0.0
+# HELP luminus_input_luminance_mean Luminancia media (0-255) da imagem de entrada
+# TYPE luminus_input_luminance_mean histogram
+luminus_input_luminance_mean_sum 22028.310269323203
+luminus_input_luminance_mean_bucket{le="16.0"} 0.0
+luminus_input_luminance_mean_bucket{le="32.0"} 1.0
+luminus_input_luminance_mean_bucket{le="48.0"} 4.0
+luminus_input_luminance_mean_bucket{le="64.0"} 9.0
+luminus_input_luminance_mean_bucket{le="80.0"} 27.0
+luminus_input_luminance_mean_bucket{le="96.0"} 51.0
+luminus_input_luminance_mean_bucket{le="112.0"} 99.0
+luminus_input_luminance_mean_bucket{le="128.0"} 133.0
+luminus_input_luminance_mean_bucket{le="144.0"} 160.0
+luminus_input_luminance_mean_bucket{le="160.0"} 172.0
+luminus_input_luminance_mean_bucket{le="176.0"} 180.0
+luminus_input_luminance_mean_bucket{le="192.0"} 188.0
+luminus_input_luminance_mean_bucket{le="208.0"} 190.0
+luminus_input_luminance_mean_bucket{le="224.0"} 192.0
+luminus_input_luminance_mean_bucket{le="240.0"} 192.0
+luminus_input_luminance_mean_bucket{le="+Inf"} 192.0
+luminus_input_luminance_mean_count 192.0
+# HELP luminus_prediction_confidence Confianca (probabilidade top-1) das predicoes
+# TYPE luminus_prediction_confidence histogram
+luminus_prediction_confidence_sum 137.72650000000002
+luminus_prediction_confidence_bucket{le="0.1"} 2.0
+luminus_prediction_confidence_bucket{le="0.2"} 13.0
+luminus_prediction_confidence_bucket{le="0.3"} 21.0
+luminus_prediction_confidence_bucket{le="0.4"} 38.0
+luminus_prediction_confidence_bucket{le="0.5"} 57.0
+luminus_prediction_confidence_bucket{le="0.6"} 72.0
+luminus_prediction_confidence_bucket{le="0.7"} 79.0
+luminus_prediction_confidence_bucket{le="0.8"} 91.0
+luminus_prediction_confidence_bucket{le="0.9"} 105.0
+luminus_prediction_confidence_bucket{le="1.0"} 192.0
+luminus_prediction_confidence_bucket{le="+Inf"} 192.0
+luminus_prediction_confidence_count 192.0
+# HELP luminus_prediction_entropy Entropia (bits) do softmax das predicoes
+# TYPE luminus_prediction_entropy histogram
+luminus_prediction_entropy_sum 312.70530000000014
+luminus_prediction_entropy_bucket{le="0.25"} 70.0
+luminus_prediction_entropy_bucket{le="0.5"} 83.0
+luminus_prediction_entropy_bucket{le="1.0"} 93.0
+luminus_prediction_entropy_bucket{le="1.5"} 108.0
+luminus_prediction_entropy_bucket{le="2.0"} 128.0
+luminus_prediction_entropy_bucket{le="3.0"} 149.0
+luminus_prediction_entropy_bucket{le="4.0"} 167.0
+luminus_prediction_entropy_bucket{le="5.0"} 177.0
+luminus_prediction_entropy_bucket{le="6.0"} 188.0
+luminus_prediction_entropy_bucket{le="8.0"} 191.0
+luminus_prediction_entropy_bucket{le="+Inf"} 192.0
+luminus_prediction_entropy_count 192.0
+# HELP bentoml_service_request_duration_seconds runner RPC duration in seconds
+# TYPE bentoml_service_request_duration_seconds histogram
+bentoml_service_request_duration_seconds_sum{endpoint="/readyz",http_response_code="200",runner_name="classifier",service_name="classifier",service_version="not available"} 0.07354479399509728
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.01",runner_name="classifier",service_name="classifier",service_version="not available"} 12.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.025",runner_name="classifier",service_name="classifier",service_version="not available"} 12.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.035",runner_name="classifier",service_name="classifier",service_version="not available"} 12.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.0375",runner_name="classifier",service_name="classifier",service_version="not available"} 12.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.04",runner_name="classifier",service_name="classifier",service_version="not available"} 12.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.0415",runner_name="classifier",service_name="classifier",service_version="not available"} 12.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.043",runner_name="classifier",service_name="classifier",service_version="not available"} 12.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.045",runner_name="classifier",service_name="classifier",service_version="not available"} 12.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.05",runner_name="classifier",service_name="classifier",service_version="not available"} 12.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.06",runner_name="classifier",service_name="classifier",service_version="not available"} 13.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.07",runner_name="classifier",service_name="classifier",service_version="not available"} 13.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.0725",runner_name="classifier",service_name="classifier",service_version="not available"} 13.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.075",runner_name="classifier",service_name="classifier",service_version="not available"} 13.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.0775",runner_name="classifier",service_name="classifier",service_version="not available"} 13.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.08",runner_name="classifier",service_name="classifier",service_version="not available"} 13.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.09",runner_name="classifier",service_name="classifier",service_version="not available"} 13.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.1",runner_name="classifier",service_name="classifier",service_version="not available"} 13.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.15",runner_name="classifier",service_name="classifier",service_version="not available"} 13.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.25",runner_name="classifier",service_name="classifier",service_version="not available"} 13.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="0.5",runner_name="classifier",service_name="classifier",service_version="not available"} 13.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="1.0",runner_name="classifier",service_name="classifier",service_version="not available"} 13.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="2.5",runner_name="classifier",service_name="classifier",service_version="not available"} 13.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="5.0",runner_name="classifier",service_name="classifier",service_version="not available"} 13.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/readyz",http_response_code="200",le="+Inf",runner_name="classifier",service_name="classifier",service_version="not available"} 13.0
+bentoml_service_request_duration_seconds_count{endpoint="/readyz",http_response_code="200",runner_name="classifier",service_name="classifier",service_version="not available"} 13.0
+bentoml_service_request_duration_seconds_sum{endpoint="/predict",http_response_code="200",runner_name="classifier",service_name="classifier",service_version="not available"} 9.008316914034367
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.01",runner_name="classifier",service_name="classifier",service_version="not available"} 0.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.025",runner_name="classifier",service_name="classifier",service_version="not available"} 0.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.035",runner_name="classifier",service_name="classifier",service_version="not available"} 0.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.0375",runner_name="classifier",service_name="classifier",service_version="not available"} 0.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.04",runner_name="classifier",service_name="classifier",service_version="not available"} 0.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.0415",runner_name="classifier",service_name="classifier",service_version="not available"} 3.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.043",runner_name="classifier",service_name="classifier",service_version="not available"} 11.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.045",runner_name="classifier",service_name="classifier",service_version="not available"} 84.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.05",runner_name="classifier",service_name="classifier",service_version="not available"} 179.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.06",runner_name="classifier",service_name="classifier",service_version="not available"} 187.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.07",runner_name="classifier",service_name="classifier",service_version="not available"} 188.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.0725",runner_name="classifier",service_name="classifier",service_version="not available"} 188.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.075",runner_name="classifier",service_name="classifier",service_version="not available"} 188.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.0775",runner_name="classifier",service_name="classifier",service_version="not available"} 189.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.08",runner_name="classifier",service_name="classifier",service_version="not available"} 191.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.09",runner_name="classifier",service_name="classifier",service_version="not available"} 191.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.1",runner_name="classifier",service_name="classifier",service_version="not available"} 191.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.15",runner_name="classifier",service_name="classifier",service_version="not available"} 191.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.25",runner_name="classifier",service_name="classifier",service_version="not available"} 192.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="0.5",runner_name="classifier",service_name="classifier",service_version="not available"} 192.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="1.0",runner_name="classifier",service_name="classifier",service_version="not available"} 192.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="2.5",runner_name="classifier",service_name="classifier",service_version="not available"} 192.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="5.0",runner_name="classifier",service_name="classifier",service_version="not available"} 192.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="200",le="+Inf",runner_name="classifier",service_name="classifier",service_version="not available"} 192.0
+bentoml_service_request_duration_seconds_count{endpoint="/predict",http_response_code="200",runner_name="classifier",service_name="classifier",service_version="not available"} 192.0
+bentoml_service_request_duration_seconds_sum{endpoint="/predict",http_response_code="500",runner_name="classifier",service_name="classifier",service_version="not available"} 0.024300290999235585
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.01",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.025",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.035",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.0375",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.04",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.0415",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.043",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.045",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.05",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.06",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.07",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.0725",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.075",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.0775",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.08",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.09",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.1",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.15",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.25",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="0.5",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="1.0",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="2.5",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="5.0",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="500",le="+Inf",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_count{endpoint="/predict",http_response_code="500",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_duration_seconds_sum{endpoint="/predict",http_response_code="400",runner_name="classifier",service_name="classifier",service_version="not available"} 0.008806500001810491
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.01",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.025",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.035",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.0375",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.04",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.0415",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.043",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.045",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.05",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.06",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.07",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.0725",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.075",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.0775",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.08",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.09",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.1",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.15",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.25",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="0.5",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="1.0",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="2.5",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="5.0",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_bucket{endpoint="/predict",http_response_code="400",le="+Inf",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+bentoml_service_request_duration_seconds_count{endpoint="/predict",http_response_code="400",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+# HELP bentoml_service_request_total Total number of runner RPC
+# TYPE bentoml_service_request_total counter
+bentoml_service_request_total{endpoint="/predict",http_response_code="200",runner_name="classifier",service_name="classifier",service_version="not available"} 192.0
+bentoml_service_request_total{endpoint="/predict",http_response_code="500",runner_name="classifier",service_name="classifier",service_version="not available"} 5.0
+bentoml_service_request_total{endpoint="/readyz",http_response_code="200",runner_name="classifier",service_name="classifier",service_version="not available"} 13.0
+bentoml_service_request_total{endpoint="/predict",http_response_code="400",runner_name="classifier",service_name="classifier",service_version="not available"} 4.0
+# HELP luminus_prediction_confidence_band_total Predicoes por faixa de confianca (low, medium, high)
+# TYPE luminus_prediction_confidence_band_total counter
+luminus_prediction_confidence_band_total{band="low"} 57.0
+luminus_prediction_confidence_band_total{band="medium"} 34.0
+luminus_prediction_confidence_band_total{band="high"} 101.0
