@@ -1,8 +1,8 @@
-"""Privacy (SDD 5.4) with a 5xx failure injected by the test, never by production code.
+"""Privacidade (SDD 5.4) com uma falha 5xx injetada pelo teste, nunca pelo codigo de producao.
 
-Runs the service in-process (TestClient): the failure comes from a monkeypatch of `ImageClassifier`
-made here. The log must hold no exception text and no raw client IP, and the error field holds
-only the exception class plus a fixed code.
+Roda o servico no mesmo processo (TestClient): a falha vem de um monkeypatch de `ImageClassifier`
+feito aqui. O log nao pode ter texto de excecao nem IP cru do cliente, e o campo de erro tem
+so a classe da excecao mais um codigo fixo.
 """
 
 from __future__ import annotations

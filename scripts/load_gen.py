@@ -1,7 +1,7 @@
 """Gerador de carga: cliente HTTP que chama `POST /predict` (SDD secao 8).
 
   just load                       # 200 chamadas, uma por vez, trafego holdout, sem drift
-  uv run python scripts/load_gen.py --n 100 --traffic henrik --drift strong
+  uv run python scripts/load_gen.py --n 100 --traffic holdout --drift strong
 
 `--traffic`: holdout (imagens de treino do Imagenette fora da referencia, controle sem drift), val (outra
 divisao do Imagenette, mesma distribuicao) e woof (Imagewoof: so caes, drift natural de classe).

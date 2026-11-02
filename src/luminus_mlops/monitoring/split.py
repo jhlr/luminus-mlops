@@ -1,9 +1,9 @@
-"""Reference x holdout split and traffic image lists (single owner, SDD Decision 7).
+"""Divisao referencia x holdout e listas de imagens de trafego (dono unico, SDD Decisao 7).
 
-Dataset: Imagenette 320px (fast.ai, 10 easy ImageNet classes). The reference is a deterministic
-sample of its `train` images: sorted paths, shuffled with seed 0, first `N_REFERENCE`. The other
-`train` images are the `holdout` (the no-drift control). Shared by `scripts/build_reference.py` and
-`scripts/load_gen.py`.
+Dataset: Imagenette 320px (fast.ai, 10 classes faceis do ImageNet). A referencia e uma amostra
+deterministica das imagens de `train`: caminhos ordenados, embaralhados com seed 0, as primeiras
+`N_REFERENCE`. As demais imagens de `train` formam o `holdout` (o controle sem drift). Compartilhado
+por `scripts/build_reference.py` e `scripts/load_gen.py`.
 """
 
 from __future__ import annotations
@@ -22,14 +22,14 @@ IMAGE_SUFFIXES = frozenset({".jpeg", ".jpg", ".png"})
 
 
 def list_images(directory: Path) -> list[Path]:
-    """Sorted images (JPEG/PNG) of a folder, recursive (class sub-folders, `samples/`...)."""
+    """Imagens (JPEG/PNG) de uma pasta, ordenadas e recursivas (subpastas de classe, `samples/`...)."""
     return sorted(p for p in directory.rglob("*") if p.suffix.lower() in IMAGE_SUFFIXES)
 
 
 def split_reference_images(
     dataset_dir: Path = IMAGENETTE_DIR, seed: int = DEFAULT_SEED, n_reference: int = N_REFERENCE
 ) -> tuple[list[Path], list[Path]]:
-    """Return (reference, holdout) from the `train` images of `dataset_dir`."""
+    """Devolve (referencia, holdout) a partir das imagens `train` de `dataset_dir`."""
     names = list_images(dataset_dir / "train")
     if len(names) <= n_reference:
         raise ValueError(f"{dataset_dir / 'train'} has {len(names)} images, not more than the reference ({n_reference})")
@@ -39,7 +39,7 @@ def split_reference_images(
 
 
 def traffic_images(traffic: str, seed: int = DEFAULT_SEED, data_dir: Path | None = None) -> list[Path]:
-    """Images of a traffic set: `holdout` (train, not in the reference), `val` (other split) or `woof` (other dataset)."""
+    """Imagens de um conjunto de trafego: `holdout` (train, fora da referencia), `val` (outra divisao) ou `woof` (outro dataset)."""
     base = data_dir if data_dir is not None else DATA_DIR
     if traffic == "holdout":
         return split_reference_images(base / IMAGENETTE_DIR.name, seed)[1]

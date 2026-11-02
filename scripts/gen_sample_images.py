@@ -23,7 +23,7 @@ def _make(index: int, rng: np.random.Generator) -> Image.Image:
     base = rng.uniform(40, 220, size=(1, 1, 3))
     tilt = rng.uniform(-80, 80, size=(1, 1, 3))
     pixels = base + tilt * (x if index % 2 == 0 else y) + rng.normal(0, 10 + 6 * index, size=(height, width, 3))
-    if index == 4:  # dark and blue-ish
+    if index == 4:  # escura e azulada
         pixels = pixels * 0.25
         pixels[..., 2] *= 1.6
     return Image.fromarray(np.clip(pixels, 0, 255).astype(np.uint8), "RGB")

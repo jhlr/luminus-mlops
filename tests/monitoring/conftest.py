@@ -91,7 +91,7 @@ def stop_service(service: LiveService) -> None:
 
 @pytest.fixture(scope="session", autouse=True)
 def samples() -> Path:
-    """Ensures the 5 synthetic samples of `just samples` (fixed seed)."""
+    """Garante as 5 amostras sinteticas de `just samples` (seed fixa)."""
     if not all((SAMPLES / name).exists() for name in SAMPLE_NAMES):
         subprocess.run([sys.executable, str(ROOT / "scripts" / "gen_sample_images.py")], check=True, cwd=ROOT)
     return SAMPLES

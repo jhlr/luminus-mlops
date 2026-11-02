@@ -1,6 +1,6 @@
-# REFERENCE ("training") environment (SDD section 2): torch/torchvision + scipy + Pillow + numpy. Nothing is trained here:
-# the job runs the real model over the reference images and writes artifacts/reference*.csv.
-# No BentoML, Prometheus client, pandas or serving code path. Build context = repository root.
+# Ambiente de REFERENCIA ("treino") (SDD secao 2): torch/torchvision + scipy + Pillow + numpy. Nada e treinado aqui:
+# o job roda o modelo real sobre as imagens de referencia e grava artifacts/reference*.csv.
+# Sem BentoML, cliente Prometheus, pandas nem caminho de servico. Contexto de build = raiz do repositorio.
 FROM python:3.13.13-slim-bookworm
 
 COPY --from=ghcr.io/astral-sh/uv:0.11.18 /uv /usr/local/bin/uv

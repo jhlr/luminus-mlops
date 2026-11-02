@@ -1,4 +1,4 @@
-"""Canonical project paths (single source of truth)."""
+"""Caminhos canonicos do projeto (fonte unica)."""
 
 from __future__ import annotations
 

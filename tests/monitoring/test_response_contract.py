@@ -1,6 +1,6 @@
-"""Response-contract guard: monitoring must not change `/predict`.
+"""Guarda do contrato de resposta: o monitoramento nao pode mudar o `/predict`.
 
-Fields and types captured from the service BEFORE the monitoring code was wired in. Values are not compared.
+Campos e tipos capturados do servico ANTES de ligar o codigo de monitoramento. Os valores nao sao comparados.
 """
 
 from __future__ import annotations

@@ -1,4 +1,4 @@
-# INFERENCE environment. Start with `just up-inference` (creates the network `luminus-net`, exports UID/GID/SERVICE_VERSION).
+# Ambiente de INFERENCIA. Subir com `just up-inference` (cria a rede `luminus-net`, exporta UID/GID/SERVICE_VERSION).
 name: luminus-inference
 
 services:
@@ -9,14 +9,14 @@ services:
       dockerfile: docker/inference/Dockerfile
       args:
         SERVICE_VERSION: ${SERVICE_VERSION:-unknown}
-    user: "${UID:-1000}:${GID:-1000}"  # the log is owned by the host user
-    read_only: true  # the only writable places are /tmp (tmpfs) and the log directory
+    user: "${UID:-1000}:${GID:-1000}"  # o log pertence ao usuario do host
+    read_only: true  # os unicos lugares gravaveis sao /tmp (tmpfs) e o diretorio do log
     tmpfs:
       - /tmp
     ports:
       - "3000:3000"
     volumes:
-      - ../../serving-logs:/serving-logs  # the only write point
+      - ../../serving-logs:/serving-logs  # o unico ponto de escrita
     environment:
       SERVICE_VERSION: ${SERVICE_VERSION:-unknown}
       SERVING_LOG_MAX_BYTES: ${SERVING_LOG_MAX_BYTES:-52428800}

@@ -1,4 +1,4 @@
-"""Service log guards (D1): line counts, noise, privacy, append-only, cross-talk."""
+"""Guardas do log de servico (D1): contagem de linhas, ruido, privacidade, append-only, vazamento entre requisicoes."""
 
 from __future__ import annotations
 

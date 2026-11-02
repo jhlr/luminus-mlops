@@ -1,11 +1,11 @@
-"""BentoML service: top-5 classification of an uploaded image (MobileNetV3-Small, ImageNet).
+"""Servico BentoML: classificacao top-5 de uma imagem enviada (MobileNetV3-Small, ImageNet).
 
-Monitoring (`luminus_mlops.monitoring`): an ASGI middleware writes one `request` and one `response`
-line to the JSON Lines log per `/predict` call (variables derived from the image and from the
-output, never pixels). A single worker writes the file. `GET /data/variables` returns the rows of
-the service's own log (GET routes through `@bentoml.asgi_app`).
+Monitoramento (`luminus_mlops.monitoring`): um middleware ASGI grava uma linha `request` e uma
+`response` no log JSON Lines por chamada de `/predict` (variaveis derivadas da imagem e da
+saida, nunca pixels). Um unico worker escreve o arquivo. `GET /data/variables` devolve as linhas
+do log do proprio servico (as rotas GET passam por `@bentoml.asgi_app`).
 
-Run:
+Rodar:
   bentoml serve luminus_mlops.service:ClassifierService --port 3000   # or: just serve
 """
 
@@ -30,22 +30,22 @@ __all__ = ["ClassifierService"]
 DEBUG_SLEEP_HEADER = "X-Debug-Sleep-Ms"
 
 
-@bentoml.asgi_app(build_data_app(), path="/data")  # GET /data/variables (@bentoml.api only serves POST)
+@bentoml.asgi_app(build_data_app(), path="/data")  # GET /data/variables (@bentoml.api so serve POST)
 class _Classifier:
     def __init__(self) -> None:
         self.classifier = ImageClassifier()
-        get_serving_logger()  # creates the log handler HERE, inside the worker (never at import)
-        self.metrics = get_metrics()  # same: prometheus_client only after PROMETHEUS_MULTIPROC_DIR is set
+        get_serving_logger()  # cria o handler do log AQUI, dentro do worker (nunca no import)
+        self.metrics = get_metrics()  # idem: prometheus_client so depois de PROMETHEUS_MULTIPROC_DIR definido
 
     @bentoml.api
     def predict(self, image: pil.Image, ctx: bentoml.Context) -> dict[str, object]:
-        """Classify the uploaded image: top-1 label, its confidence and the top-5."""
+        """Classifica a imagem enviada: rotulo top-1, sua confianca e o top-5."""
         trace: RequestTrace = ctx.request.state.trace
         with trace.stage("invalid_image"):
-            features = extract_features(image, uploaded_size(image))  # decodes the image
+            features = extract_features(image, uploaded_size(image))  # decodifica a imagem
         trace.log_request(features)
 
-        if os.environ.get("ALLOW_DEBUG_SLEEP") == "1":  # only to give the latency histogram a tail
+        if os.environ.get("ALLOW_DEBUG_SLEEP") == "1":  # so para dar cauda ao histograma de latencia
             sleep_ms = ctx.request.headers.get(DEBUG_SLEEP_HEADER, "")
             if sleep_ms.isdigit():
                 time.sleep(int(sleep_ms) / 1000)

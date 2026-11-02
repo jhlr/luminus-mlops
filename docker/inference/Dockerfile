@@ -1,7 +1,7 @@
-# INFERENCE environment (SDD section 2): luminus_mlops + BentoML + torch/torchvision (MobileNetV3-Small).
-# No pandas, scipy, mlflow, datasets or data. The ImageNet weights (~10 MB) are downloaded at BUILD time into
-# /opt/torch, so the container needs no network and no mounts to serve.
-# Build context = repository root:  docker build -f docker/inference/Dockerfile .
+# Ambiente de INFERENCIA (SDD secao 2): luminus_mlops + BentoML + torch/torchvision (MobileNetV3-Small).
+# Sem pandas, scipy, mlflow, datasets nem dados. Os pesos do ImageNet (~10 MB) sao baixados no BUILD em
+# /opt/torch, entao o container nao precisa de rede nem de montagens para servir.
+# Contexto de build = raiz do repositorio:  docker build -f docker/inference/Dockerfile .
 FROM python:3.13.13-slim-bookworm
 
 COPY --from=ghcr.io/astral-sh/uv:0.11.18 /uv /usr/local/bin/uv
@@ -9,9 +9,9 @@ COPY --from=ghcr.io/astral-sh/uv:0.11.18 /uv /usr/local/bin/uv
 WORKDIR /app
 ENV UV_LINK_MODE=copy UV_NO_CACHE=1 PATH=/opt/venv/bin:$PATH
 
-# 1) Exact dependencies from uv.lock (extra `inference`). The lock resolves torch with CUDA on Linux; here torch and
-#    torchvision (same versions as the lock) come from the CPU-only PyTorch index and the nvidia/triton packages are left out
-#    (except `nvidia-ml-py`, the `pynvml` that BentoML imports when it measures the machine resources).
+# 1) Dependencias exatas do uv.lock (extra `inference`). O lock resolve o torch com CUDA no Linux; aqui o torch e o
+#    torchvision (mesmas versoes do lock) vem do indice PyTorch so de CPU e os pacotes nvidia/triton ficam de fora
+#    (exceto `nvidia-ml-py`, o `pynvml` que o BentoML importa ao medir os recursos da maquina).
 COPY pyproject.toml uv.lock ./
 RUN uv venv --seed /opt/venv \
  && uv export --frozen --no-dev --extra inference --no-emit-project --no-hashes --no-annotate -o /tmp/requirements.txt \
@@ -22,15 +22,15 @@ RUN uv venv --seed /opt/venv \
  && uv pip install --python /opt/venv/bin/python --no-deps -r /tmp/torch.txt --index-url https://download.pytorch.org/whl/cpu \
  && rm -f /tmp/requirements.txt /tmp/rest.txt /tmp/torch.txt
 
-# 2) The library, editable in /app.
+# 2) A biblioteca, editavel em /app.
 COPY src ./src
 RUN uv pip install --python /opt/venv/bin/python --no-deps -e .
 
-# 3) The model weights, fetched once at build time (world-readable: the container runs as an arbitrary UID).
+# 3) Os pesos do modelo, baixados uma vez no build (legiveis por todos: o container roda com um UID arbitrario).
 ENV TORCH_HOME=/opt/torch
 RUN python -c "from luminus_mlops.inference import ImageClassifier; ImageClassifier()" && chmod -R a+rX /opt/torch
 
-# Arbitrary user (`user: UID:GID` in compose): HOME and caches must be writable.
+# Usuario arbitrario (`user: UID:GID` no compose): HOME e caches precisam ser gravaveis.
 ENV HOME=/tmp BENTOML_HOME=/tmp/bentoml XDG_CACHE_HOME=/tmp/cache SERVING_LOG_DIR=/serving-logs PYTHONUNBUFFERED=1
 ARG SERVICE_VERSION=unknown
 ENV SERVICE_VERSION=${SERVICE_VERSION}

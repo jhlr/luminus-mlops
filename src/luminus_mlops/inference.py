@@ -1,8 +1,8 @@
-"""Off-the-shelf image classifier: torchvision MobileNetV3-Small with ImageNet weights, on CPU.
+"""Classificador de imagens pronto: torchvision MobileNetV3-Small com pesos ImageNet, em CPU.
 
-No training happens in this project. The weights (`MobileNet_V3_Small_Weights.IMAGENET1K_V1`, about 10 MB)
-come from the torchvision model zoo (`download.pytorch.org`) and are cached under `TORCH_HOME`. The
-Docker image downloads them at build time, so the running container needs no network and no mounts.
+Nada e treinado neste projeto. Os pesos (`MobileNet_V3_Small_Weights.IMAGENET1K_V1`, cerca de 10 MB)
+vem do model zoo do torchvision (`download.pytorch.org`) e ficam em cache em `TORCH_HOME`. A imagem
+Docker baixa os pesos no build, entao o container em execucao nao precisa de rede nem de montagens.
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ WEIGHTS = MobileNet_V3_Small_Weights.IMAGENET1K_V1
 
 @dataclass(frozen=True)
 class Prediction:
-    """Softmax over the 1000 ImageNet classes plus their names (same order)."""
+    """Softmax sobre as 1000 classes do ImageNet mais os nomes delas (mesma ordem)."""
 
     probs: np.ndarray
     categories: tuple[str, ...]
