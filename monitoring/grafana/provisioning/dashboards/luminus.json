@@ -1,0 +1,3048 @@
+{
+  "uid": "luminus",
+  "title": "Luminus: monitoramento",
+  "description": "Operacao, imagem de entrada, saida do modelo, drift (KS) e logs do classificador de imagens.",
+  "tags": [
+    "luminus"
+  ],
+  "timezone": "browser",
+  "editable": false,
+  "graphTooltip": 1,
+  "schemaVersion": 41,
+  "version": 1,
+  "refresh": "30s",
+  "time": {
+    "from": "now-3h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m"
+    ]
+  },
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "links": [
+    {
+      "type": "dashboards",
+      "title": "Luminus",
+      "tags": [
+        "luminus"
+      ],
+      "asDropdown": true,
+      "includeVars": false,
+      "keepTime": true
+    }
+  ],
+  "panels": [
+    {
+      "id": 1,
+      "type": "row",
+      "title": "Operação",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "panels": []
+    },
+    {
+      "type": "stat",
+      "title": "Total de requisições (/predict)",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum(bentoml_service_request_total{endpoint=\"/predict\"})",
+          "legendFormat": "__auto",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "description": "Contador acumulado desde que o processo de inferência subiu (zera ao reiniciar).",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "id": 2,
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 1
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Requisições em andamento",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum(bentoml_service_request_in_progress{endpoint=\"/predict\"})",
+          "legendFormat": "__auto",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "description": "Com um único worker, mais de 1 significa fila.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "id": 3,
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 1
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Taxa de erro 5xx (5 min)",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "(sum(rate(bentoml_service_request_total{endpoint=\"/predict\",http_response_code=~\"5..\"}[5m])) or vector(0)) / sum(rate(bentoml_service_request_total{endpoint=\"/predict\"}[5m]))",
+          "legendFormat": "__auto",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "description": "Falhas do servidor: fração das requisições dos últimos 5 minutos.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 0.01
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "id": 4,
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 1
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Requisições por segundo por código de status",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by (http_response_code) (rate(bentoml_service_request_total{endpoint=\"/predict\"}[$__rate_interval]))",
+          "legendFormat": "{{http_response_code}}",
+          "format": "time_series"
+        }
+      ],
+      "description": "rate() do contador bentoml_service_request_total em /predict, por código HTTP.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "transformations": [],
+      "id": 5,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 6
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Taxa de erro 4xx e 5xx",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "(sum(rate(bentoml_service_request_total{endpoint=\"/predict\",http_response_code=~\"4..\"}[1m])) or vector(0)) / sum(rate(bentoml_service_request_total{endpoint=\"/predict\"}[1m]))",
+          "legendFormat": "4xx (entrada inválida)",
+          "format": "time_series"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "(sum(rate(bentoml_service_request_total{endpoint=\"/predict\",http_response_code=~\"5..\"}[1m])) or vector(0)) / sum(rate(bentoml_service_request_total{endpoint=\"/predict\"}[1m]))",
+          "legendFormat": "5xx (servidor)",
+          "format": "time_series"
+        }
+      ],
+      "description": "Fração das requisições com erro, janela de 1 minuto.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            }
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "transformations": [],
+      "id": 6,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 6
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Latência p50, p95 e p99",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\"}[1m])))",
+          "legendFormat": "p50",
+          "format": "time_series"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\"}[1m])))",
+          "legendFormat": "p95",
+          "format": "time_series"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\"}[1m])))",
+          "legendFormat": "p99",
+          "format": "time_series"
+        }
+      ],
+      "description": "histogram_quantile sobre os buckets de duração do BentoML (aproximação por interpolação dentro do bucket).",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "transformations": [],
+      "id": 7,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 14
+      }
+    },
+    {
+      "type": "barchart",
+      "title": "Histograma de latência (intervalo do dashboard)",
+      "targets": [
+        {
+          "refId": "Q0",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.01\"}[$__range])))",
+          "legendFormat": "≤ 0.01",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q1",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.025\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.01\"}[$__range])))",
+          "legendFormat": "0.01 a 0.025",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q2",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.035\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.025\"}[$__range])))",
+          "legendFormat": "0.025 a 0.035",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q3",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.0375\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.035\"}[$__range])))",
+          "legendFormat": "0.035 a 0.0375",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q4",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.04\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.0375\"}[$__range])))",
+          "legendFormat": "0.0375 a 0.04",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q5",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.0415\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.04\"}[$__range])))",
+          "legendFormat": "0.04 a 0.0415",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q6",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.043\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.0415\"}[$__range])))",
+          "legendFormat": "0.0415 a 0.043",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q7",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.045\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.043\"}[$__range])))",
+          "legendFormat": "0.043 a 0.045",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q8",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.05\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.045\"}[$__range])))",
+          "legendFormat": "0.045 a 0.05",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q9",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.06\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.05\"}[$__range])))",
+          "legendFormat": "0.05 a 0.06",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q10",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.07\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.06\"}[$__range])))",
+          "legendFormat": "0.06 a 0.07",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q11",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.0725\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.07\"}[$__range])))",
+          "legendFormat": "0.07 a 0.0725",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q12",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.075\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.0725\"}[$__range])))",
+          "legendFormat": "0.0725 a 0.075",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q13",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.0775\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.075\"}[$__range])))",
+          "legendFormat": "0.075 a 0.0775",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q14",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.08\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.0775\"}[$__range])))",
+          "legendFormat": "0.0775 a 0.08",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q15",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.09\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.08\"}[$__range])))",
+          "legendFormat": "0.08 a 0.09",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q16",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.1\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.09\"}[$__range])))",
+          "legendFormat": "0.09 a 0.1",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q17",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.15\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.1\"}[$__range])))",
+          "legendFormat": "0.1 a 0.15",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q18",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.25\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.15\"}[$__range])))",
+          "legendFormat": "0.15 a 0.25",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q19",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.5\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.25\"}[$__range])))",
+          "legendFormat": "0.25 a 0.5",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q20",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"1.0\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"0.5\"}[$__range])))",
+          "legendFormat": "0.5 a 1",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q21",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"2.5\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"1.0\"}[$__range])))",
+          "legendFormat": "1 a 2.5",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q22",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"5.0\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"2.5\"}[$__range])))",
+          "legendFormat": "2.5 a 5",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q23",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"+Inf\"}[$__range]))) - round(sum(increase(bentoml_service_request_duration_seconds_bucket{endpoint=\"/predict\",http_response_code=\"200\",le=\"5.0\"}[$__range])))",
+          "legendFormat": "> 5",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "description": "Contagem por faixa de latência: diferença entre buckets `le` consecutivos.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "",
+          "custom": {
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "axisPlacement": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "xField": "faixa",
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        },
+        "xTickLabelRotation": -45
+      },
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {
+            "mode": "seriesToRows",
+            "reducers": [
+              "lastNotNull"
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "Field": "faixa",
+              "Last *": "observações"
+            }
+          }
+        }
+      ],
+      "id": 8,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 14
+      }
+    },
+    {
+      "id": 9,
+      "type": "row",
+      "title": "Entrada (imagem)",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "panels": []
+    },
+    {
+      "type": "trend",
+      "title": "Histograma L: janela x referência",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "infinity"
+          },
+          "type": "json",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://monitor:3000/data/summary",
+          "url_options": {
+            "method": "GET",
+            "params": [
+              {
+                "key": "since",
+                "value": "${__from:date:iso}"
+              },
+              {
+                "key": "until",
+                "value": "${__to:date:iso}"
+              }
+            ]
+          },
+          "root_selector": "( $w := histograms.L.window; $r := histograms.L.reference; $sw := $sum($w); $sr := $sum($r); $map([0..255], function($i){ {\"bin\": $i, \"janela\": $sw > 0 ? $w[$i]/$sw : 0, \"referencia\": $r[$i]/$sr} }) )",
+          "columns": [
+            {
+              "selector": "bin",
+              "text": "Valor (0-255)",
+              "type": "number"
+            },
+            {
+              "selector": "janela",
+              "text": "Janela",
+              "type": "number"
+            },
+            {
+              "selector": "referencia",
+              "text": "Referência",
+              "type": "number"
+            }
+          ]
+        }
+      ],
+      "description": "Histograma 0-255 do canal L somado sobre as imagens do intervalo (barras) contra o da referência (linha), como fração do total, com peso igual por imagem (cada histograma é normalizado antes da soma, então fotos grandes não dominam). Fonte: /data/summary via Infinity.",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "infinity"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 30,
+            "showPoints": "never"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Valor (0-255)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Janela"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 70
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9aa0a6"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Referência"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#5a5a5a"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "xField": "Valor (0-255)",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "id": 10,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 23
+      }
+    },
+    {
+      "type": "trend",
+      "title": "Histograma R: janela x referência",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "infinity"
+          },
+          "type": "json",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://monitor:3000/data/summary",
+          "url_options": {
+            "method": "GET",
+            "params": [
+              {
+                "key": "since",
+                "value": "${__from:date:iso}"
+              },
+              {
+                "key": "until",
+                "value": "${__to:date:iso}"
+              }
+            ]
+          },
+          "root_selector": "( $w := histograms.R.window; $r := histograms.R.reference; $sw := $sum($w); $sr := $sum($r); $map([0..255], function($i){ {\"bin\": $i, \"janela\": $sw > 0 ? $w[$i]/$sw : 0, \"referencia\": $r[$i]/$sr} }) )",
+          "columns": [
+            {
+              "selector": "bin",
+              "text": "Valor (0-255)",
+              "type": "number"
+            },
+            {
+              "selector": "janela",
+              "text": "Janela",
+              "type": "number"
+            },
+            {
+              "selector": "referencia",
+              "text": "Referência",
+              "type": "number"
+            }
+          ]
+        }
+      ],
+      "description": "Histograma 0-255 do canal R somado sobre as imagens do intervalo (barras) contra o da referência (linha), como fração do total, com peso igual por imagem (cada histograma é normalizado antes da soma, então fotos grandes não dominam). Fonte: /data/summary via Infinity.",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "infinity"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 30,
+            "showPoints": "never"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Valor (0-255)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Janela"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 70
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#e24d42"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Referência"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#5a5a5a"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "xField": "Valor (0-255)",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "id": 11,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 23
+      }
+    },
+    {
+      "type": "trend",
+      "title": "Histograma G: janela x referência",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "infinity"
+          },
+          "type": "json",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://monitor:3000/data/summary",
+          "url_options": {
+            "method": "GET",
+            "params": [
+              {
+                "key": "since",
+                "value": "${__from:date:iso}"
+              },
+              {
+                "key": "until",
+                "value": "${__to:date:iso}"
+              }
+            ]
+          },
+          "root_selector": "( $w := histograms.G.window; $r := histograms.G.reference; $sw := $sum($w); $sr := $sum($r); $map([0..255], function($i){ {\"bin\": $i, \"janela\": $sw > 0 ? $w[$i]/$sw : 0, \"referencia\": $r[$i]/$sr} }) )",
+          "columns": [
+            {
+              "selector": "bin",
+              "text": "Valor (0-255)",
+              "type": "number"
+            },
+            {
+              "selector": "janela",
+              "text": "Janela",
+              "type": "number"
+            },
+            {
+              "selector": "referencia",
+              "text": "Referência",
+              "type": "number"
+            }
+          ]
+        }
+      ],
+      "description": "Histograma 0-255 do canal G somado sobre as imagens do intervalo (barras) contra o da referência (linha), como fração do total, com peso igual por imagem (cada histograma é normalizado antes da soma, então fotos grandes não dominam). Fonte: /data/summary via Infinity.",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "infinity"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 30,
+            "showPoints": "never"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Valor (0-255)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Janela"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 70
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#3ea65a"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Referência"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#5a5a5a"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "xField": "Valor (0-255)",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "id": 12,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 31
+      }
+    },
+    {
+      "type": "trend",
+      "title": "Histograma B: janela x referência",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "infinity"
+          },
+          "type": "json",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://monitor:3000/data/summary",
+          "url_options": {
+            "method": "GET",
+            "params": [
+              {
+                "key": "since",
+                "value": "${__from:date:iso}"
+              },
+              {
+                "key": "until",
+                "value": "${__to:date:iso}"
+              }
+            ]
+          },
+          "root_selector": "( $w := histograms.B.window; $r := histograms.B.reference; $sw := $sum($w); $sr := $sum($r); $map([0..255], function($i){ {\"bin\": $i, \"janela\": $sw > 0 ? $w[$i]/$sw : 0, \"referencia\": $r[$i]/$sr} }) )",
+          "columns": [
+            {
+              "selector": "bin",
+              "text": "Valor (0-255)",
+              "type": "number"
+            },
+            {
+              "selector": "janela",
+              "text": "Janela",
+              "type": "number"
+            },
+            {
+              "selector": "referencia",
+              "text": "Referência",
+              "type": "number"
+            }
+          ]
+        }
+      ],
+      "description": "Histograma 0-255 do canal B somado sobre as imagens do intervalo (barras) contra o da referência (linha), como fração do total, com peso igual por imagem (cada histograma é normalizado antes da soma, então fotos grandes não dominam). Fonte: /data/summary via Infinity.",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "infinity"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "custom": {
+            "lineWidth": 1,
+            "fillOpacity": 30,
+            "showPoints": "never"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Valor (0-255)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Janela"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 70
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#3d85de"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Referência"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#5a5a5a"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "xField": "Valor (0-255)",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "id": 13,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 31
+      }
+    },
+    {
+      "type": "volkovlabs-echarts-panel",
+      "title": "Boxplot das médias de L, R, G, B",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "infinity"
+          },
+          "type": "json",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://monitor:3000/data/summary",
+          "url_options": {
+            "method": "GET",
+            "params": [
+              {
+                "key": "since",
+                "value": "${__from:date:iso}"
+              },
+              {
+                "key": "until",
+                "value": "${__to:date:iso}"
+              }
+            ]
+          },
+          "root_selector": "$map([\"luminance_mean\", \"r_mean\", \"g_mean\", \"b_mean\"], function($k){ ( $n := $lookup($$.numeric, $k); {\"variavel\": $k, \"w_min\": $n.window.min, \"w_q1\": $n.window.q1, \"w_median\": $n.window.median, \"w_q3\": $n.window.q3, \"w_max\": $n.window.max, \"r_min\": $n.reference.min, \"r_q1\": $n.reference.q1, \"r_median\": $n.reference.median, \"r_q3\": $n.reference.q3, \"r_max\": $n.reference.max} ) })",
+          "columns": [
+            {
+              "selector": "variavel",
+              "text": "variavel",
+              "type": "string"
+            },
+            {
+              "selector": "w_min",
+              "text": "w_min",
+              "type": "number"
+            },
+            {
+              "selector": "w_q1",
+              "text": "w_q1",
+              "type": "number"
+            },
+            {
+              "selector": "w_median",
+              "text": "w_median",
+              "type": "number"
+            },
+            {
+              "selector": "w_q3",
+              "text": "w_q3",
+              "type": "number"
+            },
+            {
+              "selector": "w_max",
+              "text": "w_max",
+              "type": "number"
+            },
+            {
+              "selector": "r_min",
+              "text": "r_min",
+              "type": "number"
+            },
+            {
+              "selector": "r_q1",
+              "text": "r_q1",
+              "type": "number"
+            },
+            {
+              "selector": "r_median",
+              "text": "r_median",
+              "type": "number"
+            },
+            {
+              "selector": "r_q3",
+              "text": "r_q3",
+              "type": "number"
+            },
+            {
+              "selector": "r_max",
+              "text": "r_max",
+              "type": "number"
+            }
+          ]
+        }
+      ],
+      "description": "Box plot do intervalo do dashboard (azul) contra a referência (cinza): caixa Q1 a Q3, traço na mediana, bigodes no mínimo e no máximo. Painel Business Charts (ECharts, volkovlabs-echarts-panel 7.2.5) alimentado por /data/summary via Infinity.",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "infinity"
+      },
+      "options": {
+        "renderer": "canvas",
+        "editorMode": "code",
+        "getOption": "const s = context.panel.data.series[0];if (!s) { return {}; }const col = (n) => { const f = s.fields.find((x) => x.name === n); return f ? Array.from(f.values) : []; };const ink = (context.grafana && context.grafana.theme && context.grafana.theme.colors.text.primary) || '#aaa';const names = col('variavel');const box = (p) => names.map((_, i) => [col(p + '_min')[i], col(p + '_q1')[i], col(p + '_median')[i], col(p + '_q3')[i], col(p + '_max')[i]]);return { textStyle: { color: ink }, tooltip: { trigger: 'item', confine: true }, legend: { data: ['Janela', 'Referência'], textStyle: { color: ink } }, grid: { left: 90, right: 20, top: 40, bottom: 30 }, xAxis: { type: 'category', data: names, axisLabel: { color: ink } }, yAxis: { type: 'value', scale: true, axisLabel: { color: ink }, splitLine: { lineStyle: { opacity: 0.2 } } }, series: [  { name: 'Janela', type: 'boxplot', data: box('w'), itemStyle: { color: 'rgba(61,133,222,0.35)', borderColor: '#3d85de' } },  { name: 'Referência', type: 'boxplot', data: box('r'), itemStyle: { color: 'rgba(150,150,150,0.35)', borderColor: '#8a8a8a' } } ] };",
+        "editor": {
+          "language": "javascript",
+          "format": "auto"
+        },
+        "visualEditor": {
+          "dataset": [],
+          "series": [],
+          "code": ""
+        },
+        "map": "none",
+        "themeEditor": {
+          "name": "default",
+          "config": "{}"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "id": 14,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 39
+      }
+    },
+    {
+      "type": "volkovlabs-echarts-panel",
+      "title": "Boxplot de luminance_std (contraste)",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "infinity"
+          },
+          "type": "json",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://monitor:3000/data/summary",
+          "url_options": {
+            "method": "GET",
+            "params": [
+              {
+                "key": "since",
+                "value": "${__from:date:iso}"
+              },
+              {
+                "key": "until",
+                "value": "${__to:date:iso}"
+              }
+            ]
+          },
+          "root_selector": "$map([\"luminance_std\"], function($k){ ( $n := $lookup($$.numeric, $k); {\"variavel\": $k, \"w_min\": $n.window.min, \"w_q1\": $n.window.q1, \"w_median\": $n.window.median, \"w_q3\": $n.window.q3, \"w_max\": $n.window.max, \"r_min\": $n.reference.min, \"r_q1\": $n.reference.q1, \"r_median\": $n.reference.median, \"r_q3\": $n.reference.q3, \"r_max\": $n.reference.max} ) })",
+          "columns": [
+            {
+              "selector": "variavel",
+              "text": "variavel",
+              "type": "string"
+            },
+            {
+              "selector": "w_min",
+              "text": "w_min",
+              "type": "number"
+            },
+            {
+              "selector": "w_q1",
+              "text": "w_q1",
+              "type": "number"
+            },
+            {
+              "selector": "w_median",
+              "text": "w_median",
+              "type": "number"
+            },
+            {
+              "selector": "w_q3",
+              "text": "w_q3",
+              "type": "number"
+            },
+            {
+              "selector": "w_max",
+              "text": "w_max",
+              "type": "number"
+            },
+            {
+              "selector": "r_min",
+              "text": "r_min",
+              "type": "number"
+            },
+            {
+              "selector": "r_q1",
+              "text": "r_q1",
+              "type": "number"
+            },
+            {
+              "selector": "r_median",
+              "text": "r_median",
+              "type": "number"
+            },
+            {
+              "selector": "r_q3",
+              "text": "r_q3",
+              "type": "number"
+            },
+            {
+              "selector": "r_max",
+              "text": "r_max",
+              "type": "number"
+            }
+          ]
+        }
+      ],
+      "description": "Box plot do intervalo do dashboard (azul) contra a referência (cinza): caixa Q1 a Q3, traço na mediana, bigodes no mínimo e no máximo. Painel Business Charts (ECharts, volkovlabs-echarts-panel 7.2.5) alimentado por /data/summary via Infinity.",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "infinity"
+      },
+      "options": {
+        "renderer": "canvas",
+        "editorMode": "code",
+        "getOption": "const s = context.panel.data.series[0];if (!s) { return {}; }const col = (n) => { const f = s.fields.find((x) => x.name === n); return f ? Array.from(f.values) : []; };const ink = (context.grafana && context.grafana.theme && context.grafana.theme.colors.text.primary) || '#aaa';const names = col('variavel');const box = (p) => names.map((_, i) => [col(p + '_min')[i], col(p + '_q1')[i], col(p + '_median')[i], col(p + '_q3')[i], col(p + '_max')[i]]);return { textStyle: { color: ink }, tooltip: { trigger: 'item', confine: true }, legend: { data: ['Janela', 'Referência'], textStyle: { color: ink } }, grid: { left: 90, right: 20, top: 40, bottom: 30 }, xAxis: { type: 'category', data: names, axisLabel: { color: ink } }, yAxis: { type: 'value', scale: true, axisLabel: { color: ink }, splitLine: { lineStyle: { opacity: 0.2 } } }, series: [  { name: 'Janela', type: 'boxplot', data: box('w'), itemStyle: { color: 'rgba(61,133,222,0.35)', borderColor: '#3d85de' } },  { name: 'Referência', type: 'boxplot', data: box('r'), itemStyle: { color: 'rgba(150,150,150,0.35)', borderColor: '#8a8a8a' } } ] };",
+        "editor": {
+          "language": "javascript",
+          "format": "auto"
+        },
+        "visualEditor": {
+          "dataset": [],
+          "series": [],
+          "code": ""
+        },
+        "map": "none",
+        "themeEditor": {
+          "name": "default",
+          "config": "{}"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "id": 15,
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 39
+      }
+    },
+    {
+      "type": "volkovlabs-echarts-panel",
+      "title": "Boxplot de sharpness (nitidez)",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "infinity"
+          },
+          "type": "json",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://monitor:3000/data/summary",
+          "url_options": {
+            "method": "GET",
+            "params": [
+              {
+                "key": "since",
+                "value": "${__from:date:iso}"
+              },
+              {
+                "key": "until",
+                "value": "${__to:date:iso}"
+              }
+            ]
+          },
+          "root_selector": "$map([\"sharpness\"], function($k){ ( $n := $lookup($$.numeric, $k); {\"variavel\": $k, \"w_min\": $n.window.min, \"w_q1\": $n.window.q1, \"w_median\": $n.window.median, \"w_q3\": $n.window.q3, \"w_max\": $n.window.max, \"r_min\": $n.reference.min, \"r_q1\": $n.reference.q1, \"r_median\": $n.reference.median, \"r_q3\": $n.reference.q3, \"r_max\": $n.reference.max} ) })",
+          "columns": [
+            {
+              "selector": "variavel",
+              "text": "variavel",
+              "type": "string"
+            },
+            {
+              "selector": "w_min",
+              "text": "w_min",
+              "type": "number"
+            },
+            {
+              "selector": "w_q1",
+              "text": "w_q1",
+              "type": "number"
+            },
+            {
+              "selector": "w_median",
+              "text": "w_median",
+              "type": "number"
+            },
+            {
+              "selector": "w_q3",
+              "text": "w_q3",
+              "type": "number"
+            },
+            {
+              "selector": "w_max",
+              "text": "w_max",
+              "type": "number"
+            },
+            {
+              "selector": "r_min",
+              "text": "r_min",
+              "type": "number"
+            },
+            {
+              "selector": "r_q1",
+              "text": "r_q1",
+              "type": "number"
+            },
+            {
+              "selector": "r_median",
+              "text": "r_median",
+              "type": "number"
+            },
+            {
+              "selector": "r_q3",
+              "text": "r_q3",
+              "type": "number"
+            },
+            {
+              "selector": "r_max",
+              "text": "r_max",
+              "type": "number"
+            }
+          ]
+        }
+      ],
+      "description": "Box plot do intervalo do dashboard (azul) contra a referência (cinza): caixa Q1 a Q3, traço na mediana, bigodes no mínimo e no máximo. Painel Business Charts (ECharts, volkovlabs-echarts-panel 7.2.5) alimentado por /data/summary via Infinity.",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "infinity"
+      },
+      "options": {
+        "renderer": "canvas",
+        "editorMode": "code",
+        "getOption": "const s = context.panel.data.series[0];if (!s) { return {}; }const col = (n) => { const f = s.fields.find((x) => x.name === n); return f ? Array.from(f.values) : []; };const ink = (context.grafana && context.grafana.theme && context.grafana.theme.colors.text.primary) || '#aaa';const names = col('variavel');const box = (p) => names.map((_, i) => [col(p + '_min')[i], col(p + '_q1')[i], col(p + '_median')[i], col(p + '_q3')[i], col(p + '_max')[i]]);return { textStyle: { color: ink }, tooltip: { trigger: 'item', confine: true }, legend: { data: ['Janela', 'Referência'], textStyle: { color: ink } }, grid: { left: 90, right: 20, top: 40, bottom: 30 }, xAxis: { type: 'category', data: names, axisLabel: { color: ink } }, yAxis: { type: 'value', scale: true, axisLabel: { color: ink }, splitLine: { lineStyle: { opacity: 0.2 } } }, series: [  { name: 'Janela', type: 'boxplot', data: box('w'), itemStyle: { color: 'rgba(61,133,222,0.35)', borderColor: '#3d85de' } },  { name: 'Referência', type: 'boxplot', data: box('r'), itemStyle: { color: 'rgba(150,150,150,0.35)', borderColor: '#8a8a8a' } } ] };",
+        "editor": {
+          "language": "javascript",
+          "format": "auto"
+        },
+        "visualEditor": {
+          "dataset": [],
+          "series": [],
+          "code": ""
+        },
+        "map": "none",
+        "themeEditor": {
+          "name": "default",
+          "config": "{}"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "id": 16,
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 39
+      }
+    },
+    {
+      "id": 17,
+      "type": "row",
+      "title": "Saída (modelo)",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 47
+      },
+      "panels": []
+    },
+    {
+      "type": "volkovlabs-echarts-panel",
+      "title": "Boxplot de confidence, margin e top5_mass",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "infinity"
+          },
+          "type": "json",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://monitor:3000/data/summary",
+          "url_options": {
+            "method": "GET",
+            "params": [
+              {
+                "key": "since",
+                "value": "${__from:date:iso}"
+              },
+              {
+                "key": "until",
+                "value": "${__to:date:iso}"
+              }
+            ]
+          },
+          "root_selector": "$map([\"confidence\", \"margin\", \"top5_mass\"], function($k){ ( $n := $lookup($$.numeric, $k); {\"variavel\": $k, \"w_min\": $n.window.min, \"w_q1\": $n.window.q1, \"w_median\": $n.window.median, \"w_q3\": $n.window.q3, \"w_max\": $n.window.max, \"r_min\": $n.reference.min, \"r_q1\": $n.reference.q1, \"r_median\": $n.reference.median, \"r_q3\": $n.reference.q3, \"r_max\": $n.reference.max} ) })",
+          "columns": [
+            {
+              "selector": "variavel",
+              "text": "variavel",
+              "type": "string"
+            },
+            {
+              "selector": "w_min",
+              "text": "w_min",
+              "type": "number"
+            },
+            {
+              "selector": "w_q1",
+              "text": "w_q1",
+              "type": "number"
+            },
+            {
+              "selector": "w_median",
+              "text": "w_median",
+              "type": "number"
+            },
+            {
+              "selector": "w_q3",
+              "text": "w_q3",
+              "type": "number"
+            },
+            {
+              "selector": "w_max",
+              "text": "w_max",
+              "type": "number"
+            },
+            {
+              "selector": "r_min",
+              "text": "r_min",
+              "type": "number"
+            },
+            {
+              "selector": "r_q1",
+              "text": "r_q1",
+              "type": "number"
+            },
+            {
+              "selector": "r_median",
+              "text": "r_median",
+              "type": "number"
+            },
+            {
+              "selector": "r_q3",
+              "text": "r_q3",
+              "type": "number"
+            },
+            {
+              "selector": "r_max",
+              "text": "r_max",
+              "type": "number"
+            }
+          ]
+        }
+      ],
+      "description": "Box plot do intervalo do dashboard (azul) contra a referência (cinza): caixa Q1 a Q3, traço na mediana, bigodes no mínimo e no máximo. Painel Business Charts (ECharts, volkovlabs-echarts-panel 7.2.5) alimentado por /data/summary via Infinity.",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "infinity"
+      },
+      "options": {
+        "renderer": "canvas",
+        "editorMode": "code",
+        "getOption": "const s = context.panel.data.series[0];if (!s) { return {}; }const col = (n) => { const f = s.fields.find((x) => x.name === n); return f ? Array.from(f.values) : []; };const ink = (context.grafana && context.grafana.theme && context.grafana.theme.colors.text.primary) || '#aaa';const names = col('variavel');const box = (p) => names.map((_, i) => [col(p + '_min')[i], col(p + '_q1')[i], col(p + '_median')[i], col(p + '_q3')[i], col(p + '_max')[i]]);return { textStyle: { color: ink }, tooltip: { trigger: 'item', confine: true }, legend: { data: ['Janela', 'Referência'], textStyle: { color: ink } }, grid: { left: 90, right: 20, top: 40, bottom: 30 }, xAxis: { type: 'category', data: names, axisLabel: { color: ink } }, yAxis: { type: 'value', scale: true, axisLabel: { color: ink }, splitLine: { lineStyle: { opacity: 0.2 } } }, series: [  { name: 'Janela', type: 'boxplot', data: box('w'), itemStyle: { color: 'rgba(61,133,222,0.35)', borderColor: '#3d85de' } },  { name: 'Referência', type: 'boxplot', data: box('r'), itemStyle: { color: 'rgba(150,150,150,0.35)', borderColor: '#8a8a8a' } } ] };",
+        "editor": {
+          "language": "javascript",
+          "format": "auto"
+        },
+        "visualEditor": {
+          "dataset": [],
+          "series": [],
+          "code": ""
+        },
+        "map": "none",
+        "themeEditor": {
+          "name": "default",
+          "config": "{}"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "id": 18,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 48
+      }
+    },
+    {
+      "type": "volkovlabs-echarts-panel",
+      "title": "Boxplot de entropy (bits)",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "infinity"
+          },
+          "type": "json",
+          "source": "url",
+          "format": "table",
+          "parser": "backend",
+          "url": "http://monitor:3000/data/summary",
+          "url_options": {
+            "method": "GET",
+            "params": [
+              {
+                "key": "since",
+                "value": "${__from:date:iso}"
+              },
+              {
+                "key": "until",
+                "value": "${__to:date:iso}"
+              }
+            ]
+          },
+          "root_selector": "$map([\"entropy\"], function($k){ ( $n := $lookup($$.numeric, $k); {\"variavel\": $k, \"w_min\": $n.window.min, \"w_q1\": $n.window.q1, \"w_median\": $n.window.median, \"w_q3\": $n.window.q3, \"w_max\": $n.window.max, \"r_min\": $n.reference.min, \"r_q1\": $n.reference.q1, \"r_median\": $n.reference.median, \"r_q3\": $n.reference.q3, \"r_max\": $n.reference.max} ) })",
+          "columns": [
+            {
+              "selector": "variavel",
+              "text": "variavel",
+              "type": "string"
+            },
+            {
+              "selector": "w_min",
+              "text": "w_min",
+              "type": "number"
+            },
+            {
+              "selector": "w_q1",
+              "text": "w_q1",
+              "type": "number"
+            },
+            {
+              "selector": "w_median",
+              "text": "w_median",
+              "type": "number"
+            },
+            {
+              "selector": "w_q3",
+              "text": "w_q3",
+              "type": "number"
+            },
+            {
+              "selector": "w_max",
+              "text": "w_max",
+              "type": "number"
+            },
+            {
+              "selector": "r_min",
+              "text": "r_min",
+              "type": "number"
+            },
+            {
+              "selector": "r_q1",
+              "text": "r_q1",
+              "type": "number"
+            },
+            {
+              "selector": "r_median",
+              "text": "r_median",
+              "type": "number"
+            },
+            {
+              "selector": "r_q3",
+              "text": "r_q3",
+              "type": "number"
+            },
+            {
+              "selector": "r_max",
+              "text": "r_max",
+              "type": "number"
+            }
+          ]
+        }
+      ],
+      "description": "Box plot do intervalo do dashboard (azul) contra a referência (cinza): caixa Q1 a Q3, traço na mediana, bigodes no mínimo e no máximo. Painel Business Charts (ECharts, volkovlabs-echarts-panel 7.2.5) alimentado por /data/summary via Infinity.",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "infinity"
+      },
+      "options": {
+        "renderer": "canvas",
+        "editorMode": "code",
+        "getOption": "const s = context.panel.data.series[0];if (!s) { return {}; }const col = (n) => { const f = s.fields.find((x) => x.name === n); return f ? Array.from(f.values) : []; };const ink = (context.grafana && context.grafana.theme && context.grafana.theme.colors.text.primary) || '#aaa';const names = col('variavel');const box = (p) => names.map((_, i) => [col(p + '_min')[i], col(p + '_q1')[i], col(p + '_median')[i], col(p + '_q3')[i], col(p + '_max')[i]]);return { textStyle: { color: ink }, tooltip: { trigger: 'item', confine: true }, legend: { data: ['Janela', 'Referência'], textStyle: { color: ink } }, grid: { left: 90, right: 20, top: 40, bottom: 30 }, xAxis: { type: 'category', data: names, axisLabel: { color: ink } }, yAxis: { type: 'value', scale: true, axisLabel: { color: ink }, splitLine: { lineStyle: { opacity: 0.2 } } }, series: [  { name: 'Janela', type: 'boxplot', data: box('w'), itemStyle: { color: 'rgba(61,133,222,0.35)', borderColor: '#3d85de' } },  { name: 'Referência', type: 'boxplot', data: box('r'), itemStyle: { color: 'rgba(150,150,150,0.35)', borderColor: '#8a8a8a' } } ] };",
+        "editor": {
+          "language": "javascript",
+          "format": "auto"
+        },
+        "visualEditor": {
+          "dataset": [],
+          "series": [],
+          "code": ""
+        },
+        "map": "none",
+        "themeEditor": {
+          "name": "default",
+          "config": "{}"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "id": 19,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 48
+      }
+    },
+    {
+      "type": "barchart",
+      "title": "Histograma de confiança top-1",
+      "targets": [
+        {
+          "refId": "Q0",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_prediction_confidence_bucket{le=\"0.1\"}[$__range])))",
+          "legendFormat": "≤ 0.1",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q1",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_prediction_confidence_bucket{le=\"0.2\"}[$__range]))) - round(sum(increase(luminus_prediction_confidence_bucket{le=\"0.1\"}[$__range])))",
+          "legendFormat": "0.1 a 0.2",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q2",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_prediction_confidence_bucket{le=\"0.3\"}[$__range]))) - round(sum(increase(luminus_prediction_confidence_bucket{le=\"0.2\"}[$__range])))",
+          "legendFormat": "0.2 a 0.3",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q3",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_prediction_confidence_bucket{le=\"0.4\"}[$__range]))) - round(sum(increase(luminus_prediction_confidence_bucket{le=\"0.3\"}[$__range])))",
+          "legendFormat": "0.3 a 0.4",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q4",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_prediction_confidence_bucket{le=\"0.5\"}[$__range]))) - round(sum(increase(luminus_prediction_confidence_bucket{le=\"0.4\"}[$__range])))",
+          "legendFormat": "0.4 a 0.5",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q5",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_prediction_confidence_bucket{le=\"0.6\"}[$__range]))) - round(sum(increase(luminus_prediction_confidence_bucket{le=\"0.5\"}[$__range])))",
+          "legendFormat": "0.5 a 0.6",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q6",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_prediction_confidence_bucket{le=\"0.7\"}[$__range]))) - round(sum(increase(luminus_prediction_confidence_bucket{le=\"0.6\"}[$__range])))",
+          "legendFormat": "0.6 a 0.7",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q7",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_prediction_confidence_bucket{le=\"0.8\"}[$__range]))) - round(sum(increase(luminus_prediction_confidence_bucket{le=\"0.7\"}[$__range])))",
+          "legendFormat": "0.7 a 0.8",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q8",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_prediction_confidence_bucket{le=\"0.9\"}[$__range]))) - round(sum(increase(luminus_prediction_confidence_bucket{le=\"0.8\"}[$__range])))",
+          "legendFormat": "0.8 a 0.9",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q9",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_prediction_confidence_bucket{le=\"1.0\"}[$__range]))) - round(sum(increase(luminus_prediction_confidence_bucket{le=\"0.9\"}[$__range])))",
+          "legendFormat": "0.9 a 1",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q10",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_prediction_confidence_bucket{le=\"+Inf\"}[$__range]))) - round(sum(increase(luminus_prediction_confidence_bucket{le=\"1.0\"}[$__range])))",
+          "legendFormat": "> 1",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "description": "Contagem por faixa de confiança, da métrica customizada luminus_prediction_confidence.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "",
+          "custom": {
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "axisPlacement": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "xField": "faixa",
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        },
+        "xTickLabelRotation": -45
+      },
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {
+            "mode": "seriesToRows",
+            "reducers": [
+              "lastNotNull"
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "Field": "faixa",
+              "Last *": "observações"
+            }
+          }
+        }
+      ],
+      "id": 20,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 56
+      }
+    },
+    {
+      "type": "barchart",
+      "title": "Histograma de luminância média da entrada",
+      "targets": [
+        {
+          "refId": "Q0",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_input_luminance_mean_bucket{le=\"16.0\"}[$__range])))",
+          "legendFormat": "≤ 16",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q1",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_input_luminance_mean_bucket{le=\"32.0\"}[$__range]))) - round(sum(increase(luminus_input_luminance_mean_bucket{le=\"16.0\"}[$__range])))",
+          "legendFormat": "16 a 32",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q2",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_input_luminance_mean_bucket{le=\"48.0\"}[$__range]))) - round(sum(increase(luminus_input_luminance_mean_bucket{le=\"32.0\"}[$__range])))",
+          "legendFormat": "32 a 48",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q3",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_input_luminance_mean_bucket{le=\"64.0\"}[$__range]))) - round(sum(increase(luminus_input_luminance_mean_bucket{le=\"48.0\"}[$__range])))",
+          "legendFormat": "48 a 64",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q4",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_input_luminance_mean_bucket{le=\"80.0\"}[$__range]))) - round(sum(increase(luminus_input_luminance_mean_bucket{le=\"64.0\"}[$__range])))",
+          "legendFormat": "64 a 80",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q5",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_input_luminance_mean_bucket{le=\"96.0\"}[$__range]))) - round(sum(increase(luminus_input_luminance_mean_bucket{le=\"80.0\"}[$__range])))",
+          "legendFormat": "80 a 96",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q6",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_input_luminance_mean_bucket{le=\"112.0\"}[$__range]))) - round(sum(increase(luminus_input_luminance_mean_bucket{le=\"96.0\"}[$__range])))",
+          "legendFormat": "96 a 112",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q7",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_input_luminance_mean_bucket{le=\"128.0\"}[$__range]))) - round(sum(increase(luminus_input_luminance_mean_bucket{le=\"112.0\"}[$__range])))",
+          "legendFormat": "112 a 128",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q8",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_input_luminance_mean_bucket{le=\"144.0\"}[$__range]))) - round(sum(increase(luminus_input_luminance_mean_bucket{le=\"128.0\"}[$__range])))",
+          "legendFormat": "128 a 144",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q9",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_input_luminance_mean_bucket{le=\"160.0\"}[$__range]))) - round(sum(increase(luminus_input_luminance_mean_bucket{le=\"144.0\"}[$__range])))",
+          "legendFormat": "144 a 160",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q10",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_input_luminance_mean_bucket{le=\"176.0\"}[$__range]))) - round(sum(increase(luminus_input_luminance_mean_bucket{le=\"160.0\"}[$__range])))",
+          "legendFormat": "160 a 176",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q11",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_input_luminance_mean_bucket{le=\"192.0\"}[$__range]))) - round(sum(increase(luminus_input_luminance_mean_bucket{le=\"176.0\"}[$__range])))",
+          "legendFormat": "176 a 192",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q12",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_input_luminance_mean_bucket{le=\"208.0\"}[$__range]))) - round(sum(increase(luminus_input_luminance_mean_bucket{le=\"192.0\"}[$__range])))",
+          "legendFormat": "192 a 208",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q13",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_input_luminance_mean_bucket{le=\"224.0\"}[$__range]))) - round(sum(increase(luminus_input_luminance_mean_bucket{le=\"208.0\"}[$__range])))",
+          "legendFormat": "208 a 224",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q14",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_input_luminance_mean_bucket{le=\"240.0\"}[$__range]))) - round(sum(increase(luminus_input_luminance_mean_bucket{le=\"224.0\"}[$__range])))",
+          "legendFormat": "224 a 240",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "Q15",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "round(sum(increase(luminus_input_luminance_mean_bucket{le=\"+Inf\"}[$__range]))) - round(sum(increase(luminus_input_luminance_mean_bucket{le=\"240.0\"}[$__range])))",
+          "legendFormat": "> 240",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "description": "Contagem por faixa de luminância média, da métrica customizada luminus_input_luminance_mean.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "",
+          "custom": {
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "axisPlacement": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "xField": "faixa",
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        },
+        "xTickLabelRotation": -45
+      },
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {
+            "mode": "seriesToRows",
+            "reducers": [
+              "lastNotNull"
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "Field": "faixa",
+              "Last *": "observações"
+            }
+          }
+        }
+      ],
+      "id": 21,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 56
+      }
+    },
+    {
+      "id": 22,
+      "type": "row",
+      "title": "Drift (KS contra a referência)",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 64
+      },
+      "panels": []
+    },
+    {
+      "type": "stat",
+      "title": "Drift canal L",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "luminus_drift_level{channel=\"L\"}",
+          "legendFormat": "__auto",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "description": "Nível do KS (D): verde (< 0,05), amarelo (>= 0,05), vermelho (>= 0,10), cinza (menos de 8 imagens).",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "-1": {
+                  "text": "inconclusivo",
+                  "color": "gray",
+                  "index": 0
+                },
+                "0": {
+                  "text": "verde",
+                  "color": "green",
+                  "index": 1
+                },
+                "1": {
+                  "text": "amarelo",
+                  "color": "yellow",
+                  "index": 2
+                },
+                "2": {
+                  "text": "vermelho",
+                  "color": "red",
+                  "index": 3
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "gray",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "id": 23,
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 65
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Drift canal R",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "luminus_drift_level{channel=\"R\"}",
+          "legendFormat": "__auto",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "description": "Nível do KS (D): verde (< 0,05), amarelo (>= 0,05), vermelho (>= 0,10), cinza (menos de 8 imagens).",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "-1": {
+                  "text": "inconclusivo",
+                  "color": "gray",
+                  "index": 0
+                },
+                "0": {
+                  "text": "verde",
+                  "color": "green",
+                  "index": 1
+                },
+                "1": {
+                  "text": "amarelo",
+                  "color": "yellow",
+                  "index": 2
+                },
+                "2": {
+                  "text": "vermelho",
+                  "color": "red",
+                  "index": 3
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "gray",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "id": 24,
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 65
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Drift canal G",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "luminus_drift_level{channel=\"G\"}",
+          "legendFormat": "__auto",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "description": "Nível do KS (D): verde (< 0,05), amarelo (>= 0,05), vermelho (>= 0,10), cinza (menos de 8 imagens).",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "-1": {
+                  "text": "inconclusivo",
+                  "color": "gray",
+                  "index": 0
+                },
+                "0": {
+                  "text": "verde",
+                  "color": "green",
+                  "index": 1
+                },
+                "1": {
+                  "text": "amarelo",
+                  "color": "yellow",
+                  "index": 2
+                },
+                "2": {
+                  "text": "vermelho",
+                  "color": "red",
+                  "index": 3
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "gray",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "id": 25,
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 65
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Drift canal B",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "luminus_drift_level{channel=\"B\"}",
+          "legendFormat": "__auto",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "description": "Nível do KS (D): verde (< 0,05), amarelo (>= 0,05), vermelho (>= 0,10), cinza (menos de 8 imagens).",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "-1": {
+                  "text": "inconclusivo",
+                  "color": "gray",
+                  "index": 0
+                },
+                "0": {
+                  "text": "verde",
+                  "color": "green",
+                  "index": 1
+                },
+                "1": {
+                  "text": "amarelo",
+                  "color": "yellow",
+                  "index": 2
+                },
+                "2": {
+                  "text": "vermelho",
+                  "color": "red",
+                  "index": 3
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "gray",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "id": 26,
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 65
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "KS D por canal (L, R, G, B)",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "luminus_drift_ks_d",
+          "legendFormat": "{{channel}}",
+          "format": "time_series"
+        }
+      ],
+      "description": "D = máximo da diferença entre as CDFs do histograma agregado da janela (últimas 100 imagens) e o da referência, peso igual por imagem. Linhas: 0,05 e 0,10.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "thresholdsStyle": {
+              "mode": "line"
+            }
+          },
+          "min": 0,
+          "max": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.05
+              },
+              {
+                "color": "red",
+                "value": 0.1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "transformations": [],
+      "id": 27,
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 69
+      }
+    },
+    {
+      "id": 28,
+      "type": "row",
+      "title": "Logs (Loki)",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 77
+      },
+      "panels": []
+    },
+    {
+      "type": "logs",
+      "title": "Log ao vivo",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "{job=\"luminus\"}",
+          "queryType": "range"
+        }
+      ],
+      "description": "Linhas request e response, enviadas ao Loki pelo Alloy.",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "options": {
+        "showTime": true,
+        "wrapLogMessage": false,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "sortOrder": "Descending",
+        "dedupStrategy": "none"
+      },
+      "id": 29,
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 78
+      }
+    },
+    {
+      "type": "logs",
+      "title": "Erros (status_code >= 500)",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "{job=\"luminus\", event=\"response\"} | json | status_code >= 500",
+          "queryType": "range"
+        }
+      ],
+      "description": "O status_code é extraído do JSON na consulta (nunca é rótulo).",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "options": {
+        "showTime": true,
+        "wrapLogMessage": false,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "sortOrder": "Descending",
+        "dedupStrategy": "none"
+      },
+      "id": 30,
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 88
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+# REFERENCE environment: one-off job. `just build-reference-docker` (exports UID/GID).
+name: luminus-reference
+
+services:
+  build-reference:
+    image: luminus-reference:0.1.0
+    build:
+      context: ../..
+      dockerfile: docker/reference/Dockerfile
+    user: "${UID:-1000}:${GID:-1000}"
+    network_mode: none  # offline job
+    volumes:
+      - ../../data:/app/data:ro
+      - ../../artifacts:/app/artifacts  # the only write point

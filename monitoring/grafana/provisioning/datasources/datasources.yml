@@ -1,0 +1,29 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    uid: prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    jsonData:
+      timeInterval: 5s  # = scrape_interval do prometheus.yml, para o $__rate_interval
+  - name: Loki
+    uid: loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    editable: false
+  # Rotas /data/* do `monitor` (valores por imagem, histogramas de 256 bins, quartis): o que o Prometheus nao guarda.
+  - name: Monitor (Infinity)
+    uid: infinity
+    type: yesoreyeram-infinity-datasource
+    access: proxy
+    editable: false
+    jsonData:
+      auth_method: none
+      allowedHosts:
+        - http://monitor:3000
+      timeoutInSeconds: 60

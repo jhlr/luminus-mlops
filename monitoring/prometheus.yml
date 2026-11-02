@@ -1,0 +1,15 @@
+# Prometheus (E3): raspa o /metrics do servico de inferencia e do monitor a cada 5 s, pela rede `luminus-net`.
+# Os nomes `inference` e `monitor` sao os nomes dos servicos nos dois compose (DNS da rede).
+global:
+  scrape_interval: 5s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: inference
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["inference:3000"]
+  - job_name: monitor
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["monitor:3000"]

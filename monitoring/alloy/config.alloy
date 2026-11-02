@@ -1,0 +1,42 @@
+// Grafana Alloy (E1): le o arquivo de log do servico e manda as linhas para o Loki.
+// O Loki guarda logs mas nao le arquivos; um coletor (aqui o Alloy) le o arquivo e envia as linhas.
+// Rotulos so `job` e `event` (nunca status, request_id, variaveis ou latencia).
+
+// So o arquivo ATIVO. Os rotacionados (inference.log.1 ... .5) sao o mesmo conteudo com outro nome: se entrassem no glob,
+// o Alloy os leria de novo do inicio (posicao por caminho) e o Loki guardaria as linhas em duplicata (medido: 2676 linhas
+// no Loki contra 1945 no disco). Na rotacao o tailer termina de ler o arquivo renomeado e reabre `inference.log`.
+local.file_match "serving" {
+  path_targets = [{"__path__" = "/serving-logs/inference.log", "job" = "luminus"}]
+  sync_period  = "5s"
+}
+
+loki.source.file "serving" {
+  targets    = local.file_match.serving.targets
+  forward_to = [loki.process.serving.receiver]
+}
+
+loki.process "serving" {
+  // cada linha e um objeto JSON; `event` (request | response) vira rotulo
+  stage.json {
+    expressions = {event = "event", ts = "ts"}
+  }
+  // O instante do evento vem do proprio log (`ts`), nao do momento da leitura.
+  stage.timestamp {
+    source = "ts"
+    format = "RFC3339Nano"
+  }
+  stage.labels {
+    values = {event = ""}
+  }
+  // loki.source.file poe o caminho no rotulo `filename`; fora dele, o stream nao depende do arquivo
+  stage.label_drop {
+    values = ["filename"]
+  }
+  forward_to = [loki.write.loki.receiver]
+}
+
+loki.write "loki" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

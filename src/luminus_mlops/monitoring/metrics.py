@@ -24,7 +24,7 @@ LUMINANCE_BUCKETS: tuple[float, ...] = tuple(float(v) for v in range(16, 256, 16
 CONFIDENCE_BUCKETS: tuple[float, ...] = (0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
 ENTROPY_BUCKETS: tuple[float, ...] = (0.25, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0)  # bits (max log2(1000) = 9.97)
 # Buckets do histograma de duracao do BentoML. Ajustados com a latencia real medida (docs/*_metrics_analysis.md).
-DURATION_BUCKETS: tuple[float, ...] = (0.01, 0.025, 0.05, 0.06, 0.07, 0.0725, 0.075, 0.0775, 0.08, 0.085, 0.09, 0.1, 0.115, 0.13, 0.15, 0.2, 0.3, 0.5, 1.0, 2.5, 5.0)
+DURATION_BUCKETS: tuple[float, ...] = (0.01, 0.025, 0.035, 0.0375, 0.04, 0.0415, 0.043, 0.045, 0.05, 0.06, 0.07, 0.0725, 0.075, 0.0775, 0.08, 0.09, 0.1, 0.15, 0.25, 0.5, 1.0, 2.5, 5.0)
 
 
 @dataclass

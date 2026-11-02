@@ -1,0 +1,27 @@
+# Ambiente de MONITORAMENTO, servico `monitor` (SDD secao 2): BentoML leve + pandas + scipy + matplotlib + httpx.
+# Sem torch, transformers, onnxruntime nem pesos. Le o log e as referencias por montagem somente leitura.
+# Contexto de build = raiz do repositorio:  docker build -f docker/monitoring/Dockerfile.monitor .
+FROM python:3.13.13-slim-bookworm
+
+COPY --from=ghcr.io/astral-sh/uv:0.11.18 /uv /usr/local/bin/uv
+
+WORKDIR /app
+ENV UV_LINK_MODE=copy UV_NO_CACHE=1 PATH=/opt/venv/bin:$PATH
+
+COPY pyproject.toml uv.lock ./
+RUN uv venv --seed /opt/venv \
+ && uv export --frozen --no-dev --extra monitor --no-emit-project --no-hashes --no-annotate -o /tmp/requirements.txt \
+ && uv pip install --python /opt/venv/bin/python --no-deps -r /tmp/requirements.txt \
+ && rm -f /tmp/requirements.txt
+
+COPY src ./src
+COPY scripts ./scripts
+RUN uv pip install --python /opt/venv/bin/python --no-deps -e .
+
+ENV HOME=/tmp BENTOML_HOME=/tmp/bentoml XDG_CACHE_HOME=/tmp/cache \
+    SERVING_LOG_DIR=/serving-logs ARTIFACTS_DIR=/app/artifacts PYTHONUNBUFFERED=1
+ARG SERVICE_VERSION=unknown
+ENV SERVICE_VERSION=${SERVICE_VERSION}
+
+EXPOSE 3000
+CMD ["bentoml", "serve", "luminus_mlops.monitor_service:MonitorService", "--host", "0.0.0.0", "--port", "3000"]

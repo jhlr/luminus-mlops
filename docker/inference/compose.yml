@@ -1,0 +1,34 @@
+# INFERENCE environment. Start with `just up-inference` (creates the network `luminus-net`, exports UID/GID/SERVICE_VERSION).
+name: luminus-inference
+
+services:
+  inference:
+    image: luminus-inference:0.1.0
+    build:
+      context: ../..
+      dockerfile: docker/inference/Dockerfile
+      args:
+        SERVICE_VERSION: ${SERVICE_VERSION:-unknown}
+    user: "${UID:-1000}:${GID:-1000}"  # the log is owned by the host user
+    read_only: true  # the only writable places are /tmp (tmpfs) and the log directory
+    tmpfs:
+      - /tmp
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../../serving-logs:/serving-logs  # the only write point
+    environment:
+      SERVICE_VERSION: ${SERVICE_VERSION:-unknown}
+      SERVING_LOG_MAX_BYTES: ${SERVING_LOG_MAX_BYTES:-52428800}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://localhost:3000/readyz', timeout=20)"]
+      interval: 15s
+      timeout: 30s
+      retries: 10
+      start_period: 60s
+    restart: "no"
+    networks: [luminus-net]
+
+networks:
+  luminus-net:
+    external: true
