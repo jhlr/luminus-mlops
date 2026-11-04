@@ -51,10 +51,6 @@ dev = [
     "scipy-stubs",
     "types-openpyxl",
     "pandas-stubs",
-    "httpx",
-    "scipy",
-    "matplotlib",
-    "openpyxl",
 ]
 
 [tool.mypy]
@@ -62,7 +58,6 @@ strict = true
 python_version = "3.13"
 mypy_path = "src"
 files = ["src", "scripts", "tests"]
-plugins = []
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

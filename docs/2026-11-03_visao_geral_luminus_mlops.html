@@ -1,0 +1,405 @@
+<title>Luminus MLOps</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.2/mermaid.min.js"></script>
+<style>
+/* Layout: coluna de leitura de 780px, figuras dentro dela. Assinatura visual: a faixa de luminância 0-255 do hero, porque o projeto inteiro monitora luz, cor e nitidez. */
+:root{
+  --bg:#f6f6fa; --surface:#ffffff; --fg:#181a2b; --muted:#5d6079; --line:#dcdde8;
+  --accent:#3846c8; --accent-soft:#e4e7fb;
+  --green:#2e9b66; --amber:#d49a12; --red:#d0443b; --grey:#8d90a6;
+  --diagram-bg:#fcfcfe;
+  --display:"Bricolage Grotesque",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111320; --surface:#1a1d2e; --fg:#e8e9f4; --muted:#9ea1bb; --line:#2c3047;
+  --accent:#8ea0ff; --accent-soft:#222850;
+  --green:#4cc18a; --amber:#e8b43a; --red:#ec6a60; --grey:#7b7e97; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#111320; --surface:#1a1d2e; --fg:#e8e9f4; --muted:#9ea1bb; --line:#2c3047;
+  --accent:#8ea0ff; --accent-soft:#222850;
+  --green:#4cc18a; --amber:#e8b43a; --red:#ec6a60; --grey:#7b7e97; color-scheme:dark;}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.65 var(--body);margin:0;
+  padding-block:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:780px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.2rem,6vw,3.6rem);font-weight:700;letter-spacing:-.02em}
+h2{font-size:clamp(1.55rem,3.6vw,2.1rem);font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.15rem;font-weight:600;margin-top:2rem}
+p{margin:.9rem 0}
+a{color:var(--accent)}
+.hero{padding:clamp(40px,8vw,88px) 0 32px}
+.eyebrow{font:500 .75rem var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.lede{font-size:1.2rem;color:var(--muted);max-width:60ch;margin-top:1rem}
+.strip{margin-top:26px;max-width:460px}
+.strip div{height:22px;border-radius:4px;border:1px solid var(--line);background:linear-gradient(90deg,#000,#fff)}
+.strip span{display:flex;justify-content:space-between;font:500 .7rem var(--mono);color:var(--muted);margin-top:5px;letter-spacing:.06em}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px;padding:0;list-style:none}
+.toc a{display:block;font:500 .82rem var(--mono);text-decoration:none;color:var(--fg);border:1px solid var(--line);padding:5px 11px;border-radius:99px;background:var(--surface)}
+.toc a:hover,.toc a:focus-visible{border-color:var(--accent);color:var(--accent);outline:none}
+section{padding:56px 0 8px;border-top:1px solid var(--line);margin-top:48px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:28px 0}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.tile .n{font:500 1.7rem/1.1 var(--mono);display:block}
+.tile .n small{font-size:.85rem;color:var(--muted)}
+.tile .l{font-size:.84rem;color:var(--muted);margin-top:6px;display:block;line-height:1.4}
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 18px 14px;margin:24px 0}
+.fig h4{margin:0 0 4px;font:600 .95rem var(--body)}
+.fig .cap{font-size:.82rem;color:var(--muted);margin:10px 0 0;line-height:1.5}
+.cv{position:relative;height:320px}.cv.short{height:240px}.cv.tall{height:360px}
+.diagram{background:var(--diagram-bg);border:1px solid var(--line);border-radius:10px;padding:18px;margin:24px 0;overflow-x:auto}
+.diagram pre.mmd{margin:0;text-align:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}.cv{height:290px}}
+.tbl{overflow-x:auto;margin:22px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:520px}
+th,td{padding:9px 13px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:500 .72rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill{display:inline-block;font:500 .72rem var(--mono);padding:2px 9px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
+.pill.g{color:var(--green)}.pill.a{color:var(--amber)}.pill.r{color:var(--red)}
+.note{border-left:3px solid var(--accent);background:var(--accent-soft);padding:12px 16px;border-radius:0 8px 8px 0;margin:22px 0;font-size:.95rem}
+.note.warn{border-left-color:var(--amber);background:color-mix(in srgb,var(--amber) 14%,var(--bg))}
+.note b:first-child{display:block;font:500 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
+ol.steps{padding-left:1.2rem}ol.steps li{margin:.5rem 0}
+code{font:.86em var(--mono);background:var(--accent-soft);padding:1px 6px;border-radius:4px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.82rem;color:var(--muted);margin:6px 0 0}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+footer{margin:64px 0 40px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+</style>
+
+<div class="wrap">
+
+<div class="hero">
+  <div class="eyebrow">MLOps · Cesar School · Grupo Luminus</div>
+  <h1>Luminus MLOps</h1>
+  <p class="lede">Um classificador de imagens pronto, tirado da internet, colocado atrás de um serviço e vigiado por fora. Nada é treinado. O trabalho é gravar o rastro de cada requisição e de cada resposta, e saber dizer quando as fotos que chegam deixam de parecer com as de referência.</p>
+  <div class="strip" aria-label="Escala de luminância de 0 a 255"><div></div><span><i>0</i><i>luminância</i><i>255</i></span></div>
+  <ul class="toc">
+    <li><a href="#trabalho">1 O trabalho</a></li>
+    <li><a href="#dados">2 Modelo e dados</a></li>
+    <li><a href="#arquitetura">3 Arquitetura</a></li>
+    <li><a href="#log">4 O log</a></li>
+    <li><a href="#metricas">5 Métricas</a></li>
+    <li><a href="#drift">6 Drift</a></li>
+    <li><a href="#grafana">7 Grafana e Loki</a></li>
+    <li><a href="#decisoes">8 Decisões</a></li>
+    <li><a href="#falta">9 Limites</a></li>
+  </ul>
+
+  <div class="tiles">
+    <div class="tile"><span class="n">44,5<small> ms</small></span><span class="l">latência mediana por foto no Docker (p95 de 50,7 ms)</span></div>
+    <div class="tile"><span class="n">0,011–0,034</span><span class="l">KS D nos controles sem drift: tudo verde</span></div>
+    <div class="tile"><span class="n">25</span><span class="l">painéis no Grafana, todos devolveram dados</span></div>
+    <div class="tile"><span class="n">58</span><span class="l">testes, com mypy strict limpo</span></div>
+  </div>
+</div>
+
+<section id="trabalho">
+  <div class="eyebrow">1 · O trabalho</div>
+  <h2>Monitorar começa por escrever tudo em arquivo</h2>
+  <p>A atividade vale 100 pontos e o centro dela é um arquivo: cada chamada a <code>POST /predict</code> deixa duas linhas de JSON, uma com o que entrou e outra com o que saiu. Dessas linhas dá para tirar histogramas, boxplots, KS e PSI depois. O resto são extras que lidam com o mesmo arquivo: mostrar métricas, mandar o log para o Loki, expor os dados por um endpoint e ligar um Prometheus.</p>
+  <div class="fig"><h4>Pontos por entrega</h4>
+    <div class="cv short"><canvas id="c-points" role="img" aria-label="Pontos por entrega"></canvas></div>
+    <p class="cap">D1: log em arquivo. D2: <code>/metrics</code> e texto sobre como lê-lo. E1: Loki. E2: endpoint que extrai as variáveis. E3: Prometheus.</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Entrega</th><th class="num">Pontos</th><th>Onde está</th></tr></thead>
+    <tbody>
+      <tr><td>D1 log JSON Lines</td><td class="num">50</td><td><code>tracing.py</code>, <code>logging_setup.py</code>, <code>features.py</code>, <code>outputs.py</code></td></tr>
+      <tr><td>D2 <code>/metrics</code> + explicação</td><td class="num">10</td><td><code>metrics.py</code>, <code>docs/…metrics_analysis.md</code> e planilha com fórmulas vivas</td></tr>
+      <tr><td>E1 Loki</td><td class="num">5</td><td>Alloy lê o log e envia ao Loki</td></tr>
+      <tr><td>E2 endpoint de variáveis</td><td class="num">20</td><td><code>GET /data/variables</code>, e <code>/data/{reference,summary,drift}</code> no <code>monitor</code></td></tr>
+      <tr><td>E3 Prometheus</td><td class="num">15</td><td><code>monitoring/prometheus.yml</code></td></tr>
+    </tbody></table></div>
+</section>
+
+<section id="dados">
+  <div class="eyebrow">2 · Modelo e dados</div>
+  <h2>Um modelo emprestado e três conjuntos de fotos</h2>
+  <p>O modelo é o <b>MobileNetV3-Small</b> do torchvision com pesos do ImageNet (cerca de 10 MB), rodando em CPU. Ele foi escolhido porque o grupo não quis seguir com o modelo da primeira avaliação. Como ninguém treina nada, o que importa são as fotos: uma referência, um controle que deve dar tudo verde e fotos que de fato mudam.</p>
+  <div class="diagram"><pre class="mmd">
+flowchart TD
+  IN["Imagenette 320 px<br/>9.469 fotos de treino"] --> REF["Referência<br/>500 fotos (seed 0)"]
+  IN --> HO["holdout<br/>8.969 fotos<br/>CONTROLE sem drift"]
+  VAL["Imagenette val<br/>3.925 fotos<br/>outra divisão, mesma distribuição"]
+  WOOF["Imagewoof val<br/>3.929 fotos, só cães<br/>drift NATURAL"]
+  HO --> SYN["Drift sintético<br/>mild e strong"]
+  style REF fill:#dfe3fb,stroke:#3846c8,color:#10163f
+  style HO fill:#cfeedd,stroke:#2e9b66,color:#12301f
+  style VAL fill:#cfeedd,stroke:#2e9b66,color:#12301f
+  style WOOF fill:#faebb8,stroke:#d49a12,color:#4a3600
+  style SYN fill:#f8d4d0,stroke:#d0443b,color:#4a1511
+  </pre></div>
+  <p>A referência são as primeiras 500 fotos do treino depois de ordenar os caminhos e embaralhar com seed 0, então qualquer pessoa refaz a mesma divisão. O drift sintético é aplicado pelo gerador de carga: <code>mild</code> (brilho ×0,75 e +15 de vermelho) e <code>strong</code> (brilho ×0,4, tom azulado e ruído). As fotos nunca vão para o git.</p>
+  <div class="note warn"><b>Licença</b>O código do torchvision é BSD-3, mas os pesos foram treinados no ImageNet, cujos termos são de pesquisa não comercial. O projeto serve só para estudo.</div>
+</section>
+
+<section id="arquitetura">
+  <div class="eyebrow">3 · Arquitetura</div>
+  <h2>Três ambientes que só se falam por arquivos e portas</h2>
+  <p>A exigência do professor era separar o que gera a referência, o que serve o modelo e o que monitora. Cada ambiente tem sua imagem Docker, sobe e desce sozinho, e a inferência continua gravando o log mesmo com o monitoramento desligado.</p>
+  <div class="diagram"><pre class="mmd">
+flowchart LR
+  subgraph REFE["REFERÊNCIA (nada é treinado)"]
+    R1["build_reference.py<br/>torch + scipy"]
+  end
+  subgraph INF["INFERÊNCIA"]
+    I1["BentoML :3000<br/>/predict /metrics /data/variables"]
+    I2[("serving-logs/<br/>inference.log")]
+    I1 --> I2
+  end
+  subgraph MON["MONITORAMENTO"]
+    P[Prometheus :9090]
+    A[Alloy] --> L[Loki :3100]
+    M["monitor :3002<br/>/data/drift, gauges"]
+    G[Grafana :3001]
+    P --> G
+    L --> G
+    M --> G
+  end
+  R1 -- "artifacts/*.csv (somente leitura)" --> M
+  I1 -- "scrape a cada 5 s" --> P
+  I2 -- "somente leitura" --> A
+  I2 -- "somente leitura" --> M
+  </pre></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Ambiente</th><th>Tem</th><th>Não pode ter</th><th class="num">Imagem</th></tr></thead>
+    <tbody>
+      <tr><td>Referência</td><td>torch, torchvision, scipy</td><td>BentoML, código de serviço</td><td class="num">1,54 GB</td></tr>
+      <tr><td>Inferência</td><td>BentoML, torch, torchvision, escrita do log</td><td>pandas, scipy, mlflow, análise de drift</td><td class="num">1,46 GB</td></tr>
+      <tr><td>Monitoramento</td><td>Prometheus, Loki, Alloy, Grafana, <code>monitor</code></td><td>torch, pesos do modelo</td><td class="num">772 MB (monitor)</td></tr>
+    </tbody></table></div>
+  <p>O contêiner de inferência roda com o sistema de arquivos somente leitura (só <code>/tmp</code> e <code>serving-logs/</code> são graváveis). Há <b>um único worker</b> do BentoML escrevendo o log, porque o <code>RotatingFileHandler</code> (50 MB, 5 backups) não é seguro entre processos.</p>
+  <p>Tempos frios de build (do README, não reconfirmados depois): inferência com subida, 1 min 53 s; monitoramento, 1 min 3 s; referência, 2 min 35 s, e o job em si (500 imagens) leva 58 s.</p>
+</section>
+
+<section id="log">
+  <div class="eyebrow">4 · O log</div>
+  <h2>Duas linhas por chamada, nunca os pixels</h2>
+  <div class="diagram"><pre class="mmd">
+sequenceDiagram
+  participant C as Cliente
+  participant S as Serviço (BentoML)
+  participant L as inference.log
+  C->>S: POST /predict (foto)
+  S->>L: linha "request": variáveis in_* da imagem
+  S->>S: MobileNetV3-Small
+  S->>L: linha "response": status, latency_ms, variáveis out_*
+  S-->>C: label, confidence, top5
+  Note over S,L: chamada inválida gera só a linha "response"
+  </pre></div>
+  <p>As duas linhas são ligadas por <code>request_id</code>. <code>/metrics</code>, <code>/livez</code>, <code>/readyz</code> e <code>/data/*</code> não escrevem no log. O que fica registrado:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Entrada (<code>in_*</code>)</th><th>Saída (<code>out_*</code>)</th></tr></thead>
+    <tbody>
+      <tr><td><code>width</code>, <code>height</code>, <code>file_bytes</code></td><td><code>predicted_class</code> (categórica)</td></tr>
+      <tr><td><code>luminance_mean</code>, <code>r_mean</code>, <code>g_mean</code>, <code>b_mean</code></td><td><code>confidence</code> (softmax top-1)</td></tr>
+      <tr><td><code>luminance_std</code> (contraste), <code>sharpness</code> (variância do Laplaciano)</td><td><code>margin</code> (top-1 menos top-2)</td></tr>
+      <tr><td><code>hist_l</code>, <code>hist_r</code>, <code>hist_g</code>, <code>hist_b</code> (256 bins cada)</td><td><code>entropy</code> (bits), <code>top5_mass</code></td></tr>
+    </tbody></table></div>
+  <div class="note"><b>Privacidade</b>Sem pixels. O campo <code>error</code> guarda a classe da exceção mais um código fixo, nunca a mensagem. O IP do cliente entra só como os 12 primeiros caracteres do SHA-256. Um teste de falha injetada confere isso.</div>
+  <p>Os testes-guarda foram vistos <b>vermelhos antes de serem aceitos</b>: log só de acréscimo, rotação de arquivo, contrato da resposta e privacidade. Cada regra tem um dono único no código: <code>features.py</code>, <code>outputs.py</code>, <code>drift.py</code>, <code>split.py</code>, <code>log_reader.py</code> e <code>tracing.py</code>.</p>
+</section>
+
+<section id="metricas">
+  <div class="eyebrow">5 · Métricas</div>
+  <h2>O que o <code>/metrics</code> mostra, com uma carga real</h2>
+  <p>O exemplo usa 201 chamadas a <code>/predict</code> no Docker (200 de carga mais 1 manual). A resposta do serviço por código HTTP e a distribuição das faixas de confiança vêm do mesmo snapshot.</p>
+  <div class="grid2">
+    <div class="fig"><h4>Chamadas por código HTTP</h4>
+      <div class="cv short"><canvas id="c-http" role="img" aria-label="Chamadas por código HTTP"></canvas></div>
+      <p class="cap">Taxa de 5xx de 2,5% (5 de 201) e de 4xx de 2,0% (4 de 201), ambas das entradas inválidas que a carga injeta de propósito (5%).</p></div>
+    <div class="fig"><h4>Faixas de confiança (192 respostas 200)</h4>
+      <div class="cv short"><canvas id="c-band" role="img" aria-label="Predições por faixa de confiança"></canvas></div>
+      <p class="cap"><code>low</code> abaixo de 0,5, <code>medium</code> de 0,5 a 0,8, <code>high</code> a partir de 0,8.</p></div>
+  </div>
+
+  <h3>Latência: tirar o acumulado do histograma</h3>
+  <p>Os buckets do Prometheus são acumulados (o bucket "até 0,05 s" inclui o "até 0,045 s"). Para desenhar barras, subtrai-se um bucket do anterior. Essa conta está na aba <code>histogram</code> da planilha, com fórmulas vivas.</p>
+  <div class="fig"><h4>Chamadas por faixa de latência (192 respostas 200, Docker, CPU)</h4>
+    <div class="cv"><canvas id="c-lat" role="img" aria-label="Chamadas por faixa de latência"></canvas></div>
+    <p class="cap">Média de 46,9 ms (soma de 9,0083 s em 192 chamadas). A duração do BentoML e o <code>latency_ms</code> do log concordam em 0,73 ms por chamada.</p></div>
+
+  <div class="note warn"><b>Os buckets tiveram que ser refeitos</b>A grade calibrada só com o Mac fora do Docker deixava 88% das chamadas do Docker (836 de 945) num único bucket de 0,025 a 0,05 s. O histograma ficava inútil. A grade final tem passos de 1,5 a 2,5 ms perto das duas medianas e deixa no máximo 49,5% das chamadas em qualquer bucket. É a grade <i>deste</i> hardware: em outra máquina, meça de novo.</div>
+
+  <div class="grid2">
+    <div class="fig"><h4>Docker contra host (mesma carga)</h4>
+      <div class="cv short"><canvas id="c-host" role="img" aria-label="Latência no Docker contra no host"></canvas></div>
+      <p class="cap">O host (sem Docker) foi mais lento: 76,6 contra 44,5 ms de mediana. A diferença foi medida e não foi investigada.</p></div>
+    <div class="fig"><h4>Quartis de latência: bucket contra log</h4>
+      <div class="cv short"><canvas id="c-quart" role="img" aria-label="Quartis estimados pelos buckets e exatos"></canvas></div>
+      <p class="cap">O Prometheus não guarda observações. Os quartis dos buckets erram de 1 a 2 ms, porque os buckets são estreitos perto da mediana.</p></div>
+  </div>
+
+  <div class="tbl"><table>
+    <thead><tr><th>Entrada inválida</th><th class="num">HTTP</th><th>Registro no log</th></tr></thead>
+    <tbody>
+      <tr><td>Sem o campo <code>image</code></td><td class="num">400</td><td><code>ValidationError/invalid_request</code></td></tr>
+      <tr><td>Corpo vazio</td><td class="num">400</td><td><code>ValidationError/invalid_request</code></td></tr>
+      <tr><td>Bytes que não são imagem</td><td class="num">500</td><td><code>HTTPError/http_500</code> (comportamento do BentoML, não mexemos)</td></tr>
+      <tr><td>JPEG truncado</td><td class="num">500</td><td><code>OSError/invalid_image</code></td></tr>
+    </tbody></table></div>
+  <p>Retenção: as métricas vivem na memória e zeram quando o processo reinicia; o Prometheus guarda 15 dias; o log dura até a rotação descartar o 5º backup (50 MB por arquivo, no máximo 300 MB). Com cerca de 5,8 KB por par requisição+resposta, cabem em torno de 54.000 pares.</p>
+</section>
+
+<section id="drift">
+  <div class="eyebrow">6 · Drift</div>
+  <h2>O alarme verde onde deve e vermelho onde deve</h2>
+  <p>Drift é a distribuição das fotos de entrada se afastar da referência de 500 imagens. Cada carga abaixo foram 200 chamadas, com janelas de 186 a 191 imagens (as inválidas não têm imagem). O KS compara os histogramas 0 a 255 de cada canal, com <b>peso igual por imagem</b>. Níveis: amarelo a partir de D = 0,05, vermelho a partir de D = 0,10.</p>
+  <div class="fig"><h4>KS D no canal L por carga</h4>
+    <div class="cv tall"><canvas id="c-ks" role="img" aria-label="KS D no canal L por carga"></canvas></div>
+    <p class="cap">Linhas tracejadas em 0,05 (amarelo) e 0,10 (vermelho). Os dois controles ficam abaixo de 0,05. <code>woof</code> quase não mexe nos pixels. <code>mild</code> e <code>strong</code> passam fácil do vermelho (<code>strong</code> é cerca de dez vezes o limiar).</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Carga</th><th class="num">Imgs</th><th class="num">D L</th><th class="num">D R</th><th class="num">D G</th><th class="num">D B</th><th>Nível</th></tr></thead>
+    <tbody>
+      <tr><td><code>holdout</code> (controle)</td><td class="num">191</td><td class="num">0,015</td><td class="num">0,013</td><td class="num">0,011</td><td class="num">0,020</td><td><span class="pill g">verde ×4</span></td></tr>
+      <tr><td><code>val</code> (controle)</td><td class="num">186</td><td class="num">0,027</td><td class="num">0,021</td><td class="num">0,031</td><td class="num">0,034</td><td><span class="pill g">verde ×4</span></td></tr>
+      <tr><td><code>woof</code> (só cães)</td><td class="num">186</td><td class="num">0,037</td><td class="num">0,050</td><td class="num">0,045</td><td class="num">0,075</td><td><span class="pill g">verde</span> <span class="pill a">amarelo (R, B)</span></td></tr>
+      <tr><td>holdout <code>mild</code></td><td class="num">191</td><td class="num">0,161</td><td class="num">0,138</td><td class="num">0,184</td><td class="num">0,176</td><td><span class="pill r">vermelho ×4</span></td></tr>
+      <tr><td>holdout <code>strong</code></td><td class="num">191</td><td class="num">0,540</td><td class="num">0,671</td><td class="num">0,506</td><td class="num">0,325</td><td><span class="pill r">vermelho ×4</span></td></tr>
+    </tbody></table></div>
+
+  <h3>O monitor de pixels sozinho não pega tudo</h3>
+  <p>A carga <code>woof</code> é o caso mais interessante. Trocar o conjunto por fotos só de cães mal move os pixels, mas muda muito o que o modelo diz: a confiança e a entropia sobem para um PSI acima de 0,5. Já o <code>mild</code> faz o contrário: mexe forte na luminância e quase nada na confiança, ou seja, o modelo é robusto àquela mudança e só a entrada denuncia o deslocamento. Por isso o log guarda entrada e saída juntas.</p>
+  <div class="fig"><h4>PSI da luminância (entrada) e da confiança (saída)</h4>
+    <div class="cv"><canvas id="c-psi" role="img" aria-label="PSI de luminância e confiança por carga"></canvas></div>
+    <p class="cap"><code>strong</code> fica fora da escala (luminância 11,3 e confiança 1,88); o gráfico mostra as cargas moderadas. Linhas em 0,10 e 0,25 (convenção da indústria, não regra provada).</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Carga</th><th class="num">luminance_mean</th><th class="num">sharpness</th><th class="num">file_bytes</th><th class="num">confidence</th><th class="num">entropy</th><th class="num">predicted_class</th></tr></thead>
+    <tbody>
+      <tr><td><code>holdout</code></td><td class="num">0,104</td><td class="num">0,091</td><td class="num">0,076</td><td class="num">0,031</td><td class="num">0,054</td><td class="num">3,10</td></tr>
+      <tr><td><code>val</code></td><td class="num">0,048</td><td class="num">0,064</td><td class="num">0,047</td><td class="num">0,047</td><td class="num">0,057</td><td class="num">2,81</td></tr>
+      <tr><td><code>woof</code></td><td class="num">0,095</td><td class="num">0,196</td><td class="num">0,142</td><td class="num">0,552</td><td class="num">0,598</td><td class="num">21,2</td></tr>
+      <tr><td><code>mild</code></td><td class="num">0,788</td><td class="num">0,440</td><td class="num">0,636</td><td class="num">0,040</td><td class="num">0,068</td><td class="num">3,03</td></tr>
+      <tr><td><code>strong</code></td><td class="num">11,3</td><td class="num">7,45</td><td class="num">12,4</td><td class="num">1,88</td><td class="num">1,98</td><td class="num">5,44</td></tr>
+    </tbody></table></div>
+  <div class="note warn"><b>Resultado inconveniente, reportado como medido</b>O PSI de <code>predicted_class</code> dá 3,1 e 2,8 nos controles <i>sem</i> drift. Não é drift: são cerca de 190 previsões espalhadas por até 1.000 classes, e categorias vistas só de um lado entram com o epsilon (1e-6) do PSI. Para categórica de cardinalidade alta, o PSI sobre classes não serve com janelas pequenas. Leia o KS dos canais e o PSI de <code>confidence</code> e <code>entropy</code>. Nenhum limiar foi ajustado para esconder isso.</div>
+  <p>Nesse projeto o KS usou peso igual por imagem desde o começo, aproveitando a lição do Leiturista, onde histogramas somados por contagem de pixels faziam o controle disparar alarme falso. A referência (500) e as janelas (cerca de 190) aqui são maiores, e o controle ficou verde sem ajuste.</p>
+</section>
+
+<section id="grafana">
+  <div class="eyebrow">7 · Grafana e Loki</div>
+  <h2>Um dashboard, 25 painéis, e o log chegando inteiro</h2>
+  <p>Tudo é provisionado por arquivo (sem clicar em nada) e o dashboard é gerado por <code>scripts/build_dashboards.py</code>. Ele cobre operação (taxa, erros, latência p50, p95 e p99, histograma), entrada (histogramas L, R, G, B contra a referência, boxplots), saída (boxplots de confiança e entropia), drift (KS por canal e nível) e logs. O Grafana não tem box plot nativo, então os boxplots usam o painel Business Charts (ECharts), alimentado pelo <code>/data/summary</code>.</p>
+  <h3>O log duplicado no Loki</h3>
+  <p>O Loki guarda logs mas não lê arquivos, então o Alloy lê o arquivo e envia as linhas. Na primeira versão o Alloy lia também os arquivos rotacionados (<code>inference.log.1</code> e seguintes) e relia tudo do início. A conta não fechava:</p>
+  <div class="fig"><h4>Linhas no Loki contra linhas em disco</h4>
+    <div class="cv short"><canvas id="c-loki" role="img" aria-label="Linhas no Loki contra linhas em disco"></canvas></div>
+    <p class="cap">Lendo só o arquivo ativo, o Loki ficou com 1.945 linhas, igual ao disco, também depois de duas rotações forçadas (<code>SERVING_LOG_MAX_BYTES=2000000</code>).</p></div>
+  <p>Verificação: o Prometheus mostra os alvos <code>inference</code> e <code>monitor</code> no ar, e os 25 painéis foram consultados pela API do Grafana e todos devolveram dados após uma carga.</p>
+</section>
+
+<section id="decisoes">
+  <div class="eyebrow">8 · Decisões</div>
+  <h2>O que ficou decidido, e por quê</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Decisão</th><th>Motivo</th></tr></thead>
+    <tbody>
+      <tr><td>Um único worker BentoML</td><td>O <code>RotatingFileHandler</code> não é seguro entre processos.</td></tr>
+      <tr><td>Carga em laço fechado (<code>--concurrency 1</code>)</td><td>Taxa fixa estoura o timeout do BentoML com um worker só.</td></tr>
+      <tr><td>Alloy lê só o log ativo</td><td>Ler os rotacionados duplica linhas no Loki (2.676 contra 1.945).</td></tr>
+      <tr><td>Peso igual por imagem no KS</td><td>Fotos grandes não dominam o histograma agregado.</td></tr>
+      <tr><td>Buckets de latência da própria máquina</td><td>A grade do host deixava 88% das chamadas num bucket só.</td></tr>
+      <tr><td>Entrada e saída no mesmo log</td><td>O <code>woof</code> só aparece na saída; o <code>mild</code> só na entrada.</td></tr>
+      <tr><td>Comentários e docstrings em português</td><td>Padrão do grupo, ao lado de documentos de design em inglês.</td></tr>
+    </tbody></table></div>
+</section>
+
+<section id="falta">
+  <div class="eyebrow">9 · Limites e pendências</div>
+  <h2>O que ainda não foi confirmado</h2>
+  <ol class="steps">
+    <li><b>Tempos frios de build do Docker</b> (1:53, 1:03 e 2:35) vêm do README e não foram reconfirmados.</li>
+    <li><b>Referência de 500 fotos.</b> É pequena para o KS e o PSI. Cada número deve ser lido com essa ressalva.</li>
+    <li><b>PSI de classe prevista</b> não presta com janelas pequenas e 1.000 classes. Fica documentado, sem limiar ajustado.</li>
+    <li><b>Docker contra host.</b> O host foi mais lento (76,6 contra 44,5 ms) e a causa não foi investigada.</li>
+    <li><b>Dados e imagens ocupam disco de propósito:</b> cerca de 700 MB de <code>data/</code> e 3,8 GB de imagens Docker.</li>
+  </ol>
+</section>
+
+<footer>Fontes: README, SDD, análise de <code>/metrics</code> e resultados de drift em <code>luminus-mlops/docs/</code>, de 02/11/2026. Todos os números vêm desses documentos.</footer>
+</div>
+
+<script>
+(function(){
+  var charts=[];
+  function tok(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+  Chart.register({id:'thr',afterDraw:function(c,a,o){
+    if(!o||!o.lines)return;var y=c.scales.y,ctx=c.ctx;
+    o.lines.forEach(function(l){var py=y.getPixelForValue(l.v);ctx.save();ctx.setLineDash([5,4]);
+      ctx.strokeStyle=l.c;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(c.chartArea.left,py);ctx.lineTo(c.chartArea.right,py);ctx.stroke();ctx.restore();});}});
+  function base(fg,line,extra){
+    var o={responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:fg,font:{family:'IBM Plex Sans',size:12},boxWidth:12}},tooltip:{}},
+      scales:{x:{ticks:{color:fg,font:{family:'IBM Plex Sans',size:11}},grid:{color:line}},
+              y:{ticks:{color:fg,font:{family:'IBM Plex Mono',size:11}},grid:{color:line},beginAtZero:true}}};
+    if(extra)extra(o);return o}
+  function mk(id,cfg){var el=document.getElementById(id);if(!el)return;charts.push(new Chart(el,cfg))}
+  function build(){
+    charts.forEach(function(c){c.destroy()});charts=[];
+    if(!window.Chart)return;
+    var fg=tok('--muted'),line=tok('--line'),acc=tok('--accent'),g=tok('--green'),a=tok('--amber'),r=tok('--red'),gr=tok('--grey'),surf=tok('--surface');
+    var donut=function(labels,data,cols){return {type:'doughnut',data:{labels:labels,datasets:[{data:data,backgroundColor:cols,borderColor:surf,borderWidth:2}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:fg,boxWidth:12,font:{size:11}}}}}}};
+    var noLeg=function(o){o.plugins.legend.display=false};
+    mk('c-points',donut(['D1 log (50)','D2 /metrics (10)','E1 Loki (5)','E2 endpoint (20)','E3 Prometheus (15)'],[50,10,5,20,15],[acc,g,a,gr,r]));
+    mk('c-http',donut(['200 (192)','400 (4)','500 (5)'],[192,4,5],[g,a,r]));
+    mk('c-band',donut(['low (57)','medium (34)','high (101)'],[57,34,101],[r,a,g]));
+    mk('c-lat',{type:'bar',data:{labels:['≤0,04','0,04–0,0415','0,0415–0,043','0,043–0,045','0,045–0,05','0,05–0,06','0,06–0,07','0,07–0,0775','0,0775–0,08','0,08–0,25'],
+      datasets:[{data:[0,3,8,73,95,8,1,1,2,1],backgroundColor:acc}]},
+      options:base(fg,line,function(o){noLeg(o);o.scales.x.title={display:true,text:'latência (s)',color:fg};o.scales.y.title={display:true,text:'chamadas',color:fg};
+        o.scales.x.ticks.maxRotation=60;o.scales.x.ticks.font={size:10,family:'IBM Plex Mono'};})});
+    mk('c-host',{type:'bar',data:{labels:['p50','p95'],datasets:[
+      {label:'Docker',data:[44.5,50.7],backgroundColor:acc},{label:'Host (just serve)',data:[76.6,88.6],backgroundColor:gr}]},
+      options:base(fg,line,function(o){o.scales.y.title={display:true,text:'ms',color:fg};})});
+    mk('c-quart',{type:'bar',data:{labels:['Q1','mediana','Q3'],datasets:[
+      {label:'Dos buckets',data:[44.01,45.63,48.16],backgroundColor:gr},{label:'Exato (log)',data:[43.68,44.54,45.89],backgroundColor:acc}]},
+      options:base(fg,line,function(o){o.scales.y.title={display:true,text:'ms',color:fg};o.scales.y.min=40;o.scales.y.beginAtZero=false;})});
+    mk('c-ks',{type:'bar',data:{labels:['holdout','val','woof','mild','strong'],datasets:[
+      {data:[0.015,0.027,0.037,0.161,0.540],backgroundColor:[g,g,a,r,r]}]},
+      options:base(fg,line,function(o){noLeg(o);o.plugins.thr={lines:[{v:0.05,c:a},{v:0.10,c:r}]};
+        o.scales.y.title={display:true,text:'KS D (canal L)',color:fg};})});
+    mk('c-psi',{type:'bar',data:{labels:['holdout','val','woof','mild'],datasets:[
+      {label:'PSI luminance_mean (entrada)',data:[0.104,0.048,0.095,0.788],backgroundColor:acc},
+      {label:'PSI confidence (saída)',data:[0.031,0.047,0.552,0.040],backgroundColor:a}]},
+      options:base(fg,line,function(o){o.plugins.thr={lines:[{v:0.10,c:gr},{v:0.25,c:r}]};})});
+    mk('c-loki',{type:'bar',data:{labels:['Disco','Loki lendo ativo + rotacionados','Loki lendo só o ativo'],datasets:[{data:[1945,2676,1945],backgroundColor:[gr,r,g]}]},
+      options:base(fg,line,function(o){noLeg(o);o.scales.y.title={display:true,text:'linhas',color:fg};})});
+  }
+  function start(){build()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+  try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',build)}catch(e){}
+  new MutationObserver(build).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+})();
+</script>
+
+<script>
+/* Diagramas: o proprio arquivo carrega o mermaid 10.9.2 e desenha, sem depender do renderizador do host.
+   Superficie clara fixa nos dois temas, com texto escuro definido aqui, para nunca dar letra clara em fundo branco. */
+(function(){
+  function decode(h){var t=document.createElement('textarea');t.innerHTML=h;return t.value}
+  function draw(){
+    if(!window.mermaid)return;
+    mermaid.initialize({startOnLoad:false,securityLevel:'loose',theme:'base',fontFamily:'IBM Plex Sans, system-ui, sans-serif',
+      themeVariables:{background:'#fcfcfe',primaryColor:'#eef0fb',primaryTextColor:'#181a2b',primaryBorderColor:'#8d90a6',
+        secondaryColor:'#f3f4fb',tertiaryColor:'#ffffff',lineColor:'#4b4f6a',textColor:'#181a2b',titleColor:'#181a2b',
+        nodeTextColor:'#181a2b',edgeLabelBackground:'#ffffff',clusterBkg:'#f3f4fb',clusterBorder:'#8d90a6',
+        actorBkg:'#eef0fb',actorBorder:'#8d90a6',actorTextColor:'#181a2b',actorLineColor:'#8d90a6',
+        signalColor:'#181a2b',signalTextColor:'#181a2b',labelBoxBkgColor:'#eef0fb',labelBoxBorderColor:'#8d90a6',
+        labelTextColor:'#181a2b',loopTextColor:'#181a2b',noteBkgColor:'#fff7d6',noteTextColor:'#181a2b',noteBorderColor:'#d49a12',
+        activationBkgColor:'#dfe3fb',activationBorderColor:'#8d90a6',sequenceNumberColor:'#ffffff'}});
+    document.querySelectorAll('pre.mmd').forEach(function(el,i){
+      var src=decode(el.innerHTML).trim();
+      mermaid.render('mmd-'+i,src).then(function(r){
+        var d=document.createElement('div');d.innerHTML=r.svg;el.replaceWith(d);
+      }).catch(function(e){el.textContent=src;console.error('mermaid',e)});
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',draw);else draw();
+})();
+</script>

@@ -13,9 +13,7 @@ data:
     mkdir -p data
     for name in imagenette2-320 imagewoof2-320; do
         if [ -d "data/$name/train" ]; then echo "data/$name already there, skipping."; continue; fi
-        curl -fL "{{DATA_URL}}/$name.tgz" -o "data/$name.tgz"
-        tar -xzf "data/$name.tgz" -C data
-        mkdir -p ~/.Trash && mv "data/$name.tgz" ~/.Trash/
+        curl -fL "{{DATA_URL}}/$name.tgz" | tar -xz -C data
     done
 
 # regenera as 5 imagens sinteticas de exemplo em samples/
@@ -38,14 +36,10 @@ build-reference:
 load *ARGS:
     uv run --extra monitor python scripts/load_gen.py {{ARGS}}
 
-# analise de drift sobre o log (KS por canal, PSI, boxplots) em reports/<label>/ (ex.: just analyze --last 20 --label strong)
-analyze *ARGS:
-    uv run --extra monitor python scripts/analyze_log.py {{ARGS}}
-
 # checagem de tipos e testes
 check:
-    uv run mypy
-    uv run pytest tests
+    uv run --all-extras mypy
+    uv run --all-extras pytest tests
 
 # --- Docker: ambientes separados de referencia, inferencia e monitoramento (docs/2026-11-02_sdd_monitoramento_mlops.md, secao 2) ---
 

@@ -69,7 +69,7 @@ def aggregate_histograms(hists: Iterable[Sequence[float]]) -> list[float]:
     Cada histograma (256 bins) e normalizado para somar 1 e depois somado, entao o total e o
     numero de imagens e uma foto de milhoes de pixels pesa o mesmo que uma pequena. Histogramas
     vazios (soma 0) sao ignorados; sem imagens devolve 256 zeros. Usado pela referencia
-    (`reference_hist.csv`), pela janela, pelo `/data/summary`, pelos gauges e pelo `analyze_log`.
+    (`reference_hist.csv`), pela janela, pelo `/data/summary`, e pelos gauges.
     """
     total = np.zeros(HIST_BINS, dtype=np.float64)
     for hist in hists:

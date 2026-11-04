@@ -11,12 +11,18 @@ CONSUMERS = [
     ROOT / "src" / "luminus_mlops" / "service.py",
     ROOT / "src" / "luminus_mlops" / "monitor_service.py",
     *[p for p in MON.glob("*.py")],
-    *[ROOT / "scripts" / n for n in ("build_reference.py", "load_gen.py", "analyze_log.py", "make_metrics_xlsx.py")],
+    *[ROOT / "scripts" / n for n in ("build_reference.py", "load_gen.py", "make_metrics_xlsx.py")],
 ]
 
 
 def _files_except(owner: str) -> list[Path]:
-    return [p for p in CONSUMERS if p.exists() and p.name != owner]
+    return [p for p in CONSUMERS if p.name != owner]
+
+
+def test_every_guarded_consumer_exists() -> None:
+    """Um arquivo vigiado que sumiu nao pode fazer os outros guardas passarem em silencio."""
+    missing = [str(p.relative_to(ROOT)) for p in CONSUMERS if not p.exists()]
+    assert not missing, missing
 
 
 def _trees(paths: list[Path]) -> list[tuple[Path, ast.AST]]:

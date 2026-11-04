@@ -11,9 +11,6 @@ Rodar:
 
 from __future__ import annotations
 
-import os
-import time
-
 import bentoml
 from PIL import Image as pil
 
@@ -26,8 +23,6 @@ from .monitoring.outputs import derive_outputs, top_k
 from .monitoring.tracing import RequestTrace, TraceMiddleware
 
 __all__ = ["ClassifierService"]
-
-DEBUG_SLEEP_HEADER = "X-Debug-Sleep-Ms"
 
 
 @bentoml.asgi_app(build_data_app(), path="/data")  # GET /data/variables (@bentoml.api so serve POST)
@@ -44,11 +39,6 @@ class _Classifier:
         with trace.stage("invalid_image"):
             features = extract_features(image, uploaded_size(image))  # decodifica a imagem
         trace.log_request(features)
-
-        if os.environ.get("ALLOW_DEBUG_SLEEP") == "1":  # so para dar cauda ao histograma de latencia
-            sleep_ms = ctx.request.headers.get(DEBUG_SLEEP_HEADER, "")
-            if sleep_ms.isdigit():
-                time.sleep(int(sleep_ms) / 1000)
 
         with trace.stage("inference_failed"):
             pred = self.classifier.predict_image(image)

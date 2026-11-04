@@ -11,8 +11,6 @@ invalidas (bytes que nao sao imagem, corpo vazio, campo `image` ausente, JPEG tr
 Carga em laco fechado: `--concurrency` (padrao 1) e o numero de chamadas em andamento ao mesmo tempo; a
 proxima so sai quando uma anterior termina (um unico worker). Despejar chamadas a uma taxa fixa
 (`--rps`, opcional) acima da capacidade forma fila no servidor. `--rps` so limita o ritmo maximo de envio.
-`--slow-pct` pede ao servico (com ALLOW_DEBUG_SLEEP=1) uma espera extra, para dar cauda ao
-histograma de latencia.
 """
 
 from __future__ import annotations
@@ -41,7 +39,6 @@ NOISE_SIGMA = 12.0
 class Job:
     kind: str  # "valid" ou um item de INVALID_KINDS
     path: Path
-    slow: bool
 
 
 def apply_drift(image: Image.Image, drift: str, rng: np.random.Generator) -> Image.Image:
@@ -76,39 +73,37 @@ def encode(path: Path, drift: str, rng: np.random.Generator) -> tuple[bytes, str
     return buffer.getvalue(), "image/jpeg"
 
 
-def build_jobs(images: list[Path], n: int, invalid_pct: float, slow_pct: float, seed: int) -> list[Job]:
+def build_jobs(images: list[Path], n: int, invalid_pct: float, seed: int) -> list[Job]:
     rng = random.Random(seed)
     pool = images * (n // len(images)) + rng.sample(images, n % len(images))
     jobs: list[Job] = []
     invalid_seen = 0
     for path in pool:
-        slow = rng.random() * 100 < slow_pct
         if rng.random() * 100 < invalid_pct:
-            jobs.append(Job(INVALID_KINDS[invalid_seen % len(INVALID_KINDS)], path, slow))
+            jobs.append(Job(INVALID_KINDS[invalid_seen % len(INVALID_KINDS)], path))
             invalid_seen += 1
         else:
-            jobs.append(Job("valid", path, slow))
+            jobs.append(Job("valid", path))
     return jobs
 
 
-def send(client: httpx.Client, url: str, job: Job, drift: str, seed: int, slow_ms: int) -> tuple[int, float]:
+def send(client: httpx.Client, url: str, job: Job, drift: str, seed: int) -> tuple[int, float]:
     """Uma chamada; devolve (status, latencia em segundos)."""
     rng = np.random.default_rng([seed, zlib.crc32(job.path.name.encode())])
-    headers = {"X-Debug-Sleep-Ms": str(slow_ms)} if job.slow else {}
     endpoint = f"{url.rstrip('/')}/predict"
     started = time.perf_counter()
     if job.kind == "valid":
         payload, content_type = encode(job.path, drift, rng)
-        response = client.post(endpoint, files={"image": (job.path.name, payload, content_type)}, headers=headers)
+        response = client.post(endpoint, files={"image": (job.path.name, payload, content_type)})
     elif job.kind == "not_an_image":
-        response = client.post(endpoint, files={"image": ("x.jpg", b"this is not an image", "image/jpeg")}, headers=headers)
+        response = client.post(endpoint, files={"image": ("x.jpg", b"this is not an image", "image/jpeg")})
     elif job.kind == "empty_body":
-        response = client.post(endpoint, headers=headers)
+        response = client.post(endpoint)
     elif job.kind == "missing_field":
-        response = client.post(endpoint, data={"outro_campo": "x"}, headers=headers)
+        response = client.post(endpoint, data={"outro_campo": "x"})
     else:  # truncated_jpeg
         data = job.path.read_bytes()
-        response = client.post(endpoint, files={"image": ("t.jpg", data[: len(data) // 3], "image/jpeg")}, headers=headers)
+        response = client.post(endpoint, files={"image": ("t.jpg", data[: len(data) // 3], "image/jpeg")})
     return response.status_code, time.perf_counter() - started
 
 
@@ -122,8 +117,6 @@ def main() -> None:
     parser.add_argument("--images-dir", type=Path, default=None, help="usa as imagens desta pasta (ex.: samples) no lugar de --traffic")
     parser.add_argument("--drift", choices=("none", "mild", "strong"), default="none")
     parser.add_argument("--invalid-pct", type=float, default=5.0)
-    parser.add_argument("--slow-pct", type=float, default=0.0)
-    parser.add_argument("--slow-ms", type=int, default=1500)
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
     args = parser.parse_args()
     if args.concurrency < 1:
@@ -134,7 +127,7 @@ def main() -> None:
     images = list_images(args.images_dir) if args.images_dir else traffic_images(args.traffic, args.seed)
     if not images:
         raise SystemExit("nenhuma imagem encontrada; rode `just data` (baixa o Imagenette e o Imagewoof) ou use --images-dir")
-    jobs = build_jobs(images, args.n, args.invalid_pct, args.slow_pct, args.seed)
+    jobs = build_jobs(images, args.n, args.invalid_pct, args.seed)
     print(f"{len(jobs)} chamadas a {args.url}/predict, trafego={args.images_dir or args.traffic} ({len(images)} imagens), drift={args.drift}, concorrencia={args.concurrency}, rps={'sem limite' if args.rps is None else args.rps}")
 
     statuses: Counter[str] = Counter()
@@ -148,7 +141,7 @@ def main() -> None:
                 delay = started + index / args.rps - time.perf_counter()
                 if delay > 0:
                     time.sleep(delay)
-            futures.append((job, pool.submit(send, client, args.url, job, args.drift, args.seed, args.slow_ms)))
+            futures.append((job, pool.submit(send, client, args.url, job, args.drift, args.seed)))
         for job, future in futures:
             status, latency = future.result()
             statuses[str(status)] += 1

@@ -83,10 +83,7 @@ gravando o log com o monitoramento parado. O contêiner de inferência roda com 
 `serving-logs/` são graváveis). **Um único worker** BentoML escreve o log, porque o `RotatingFileHandler` (50 MB, 5 backups) não é
 seguro entre processos.
 
-Medido neste Mac (Docker Desktop): imagem de inferência **1,46 GB**, monitor **772 MB**, referência **1,54 GB**; build da inferência
-com cache frio e subida 1 min 53 s, monitoramento (inclui baixar Prometheus, Loki, Alloy, Grafana) 1 min 3 s, build da referência
-2 min 35 s (o job em si, 500 imagens, leva 58 s). Latência por chamada no Docker: p50 44,5 ms, p95 50,7 ms
-(`docs/2026-11-02_monitoramento_metrics_analysis.md`).
+Tamanhos de imagem, tempos de build e latência no Docker foram medidos neste Mac: `docs/2026-11-04_medicoes_docker_e_loki.md`.
 
 ## Modelo e dados
 
@@ -108,6 +105,8 @@ com cache frio e subida 1 min 53 s, monitoramento (inclui baixar Prometheus, Lok
 | `luminance_std` (contraste), `sharpness` (variância do Laplaciano) | `margin` (top-1 menos top-2) |
 | `hist_l`, `hist_r`, `hist_g`, `hist_b` (256 bins) | `entropy` (bits do softmax), `top5_mass` |
 
+Três variáveis extras de imagem (colorfulness, edge density, cor dominante) foram propostas e testadas fora do serviço: `docs/2026-11-04_features_extras_imagens.md`.
+
 Mais `ts`, `request_id`, `status_code`, `latency_ms` e `error`. Privacidade: sem pixels; `error` é a classe da exceção mais um código
 fixo (nunca a mensagem); o IP do cliente só entra como os 12 primeiros hex do SHA-256.
 
@@ -125,9 +124,7 @@ fixo (nunca a mensagem); o IP do cliente só entra como os 12 primeiros hex do S
   sum(rate(bentoml_service_request_total{endpoint="/predict"}[1m]))
   ```
 - **Loki** (`:3100`): o Loki guarda logs mas não lê arquivos; o **Alloy** lê `serving-logs/inference.log` e envia as linhas.
-  Rótulos só `job` e `event`. Exemplo: `{job="luminus", event="response"} | json | status_code >= 500`. O Alloy lê só o arquivo ativo:
-  ao incluir os rotacionados (`inference.log.1`...) o Loki guardou 2.676 linhas contra 1.945 no disco (relidos do início); só com o
-  ativo ficou **1.945 = 1.945, também depois de 2 rotações forçadas** (`SERVING_LOG_MAX_BYTES=2000000`).
+  Rótulos só `job` e `event`. Exemplo: `{job="luminus", event="response"} | json | status_code >= 500`. O Alloy lê só o arquivo ativo, para o Loki não reler as linhas dos arquivos rotacionados (medição em `docs/2026-11-04_medicoes_docker_e_loki.md`).
 - **Grafana** (`:3001`, sem login, tudo provisionado por arquivo): um dashboard com operação (taxa, erros, latência p50/p95/p99 e
   histograma), entrada (histogramas L, R, G, B contra a referência, boxplots), saída (boxplots de confiança e entropia, histogramas),
   drift (KS D por canal e nível) e logs (Loki). O Grafana não tem box plot nativo: usamos o painel Business Charts (ECharts) alimentado
